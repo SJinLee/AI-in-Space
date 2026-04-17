@@ -175,21 +175,20 @@ print("\n💡 10,000개 숫자의 평균을 한 줄에 계산! 이게 바로 AI�
 
 ### 문제 1: 행렬 모양 맞히기
 다음 행렬의 모양(행×열)을 적으세요.
-
-| 행렬 | 모양 (행×열) |
-|---|---|
-| $\begin{matrix} 1 & 2 \\ 3 & 4 \end{matrix}$ | ______ |
-| $\begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}$ | ______ |
-| $\begin{pmatrix} 1 \\ 2 \\ 3 \\ 4 \end{pmatrix}$ | ______ |
+$$\begin{matrix} 1 & 2 \\\\ 3 & 4 \end{matrix} \longrightarrow ______ $$
+$$\begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \end{pmatrix} \longrightarrow ______ $$
+$$\begin{pmatrix} 1 \\ 2 \\ 3 \\ 4 \end{pmatrix} \longrightarrow ______ $$
 
 ### 문제 2: 행렬 연산 결과 예측
-$$A = \begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \\\\ 7 & 8 & 9 \end{pmatrix}$$
+$$A = \begin{pmatrix} 1 & 2 \\\\ 4 & 5 \end{pmatrix}$$
 
 | 연산 | 결과 |
-|------|------|
-| $A \times 2$ | $\begin{pmatrix} \_\_ & \_\_ \\ \_\_ & \_\_ \end{pmatrix}$ |
-| $A + 10$ | $\begin{pmatrix} \_\_ & \_\_ \\ \_\_ & \_\_ \end{pmatrix}$ |
-| $A^2$ (칸별 제곱) | $\begin{pmatrix} \_\_ & \_\_ \\ \_\_ & \_\_ \end{pmatrix}$ |
+* 연산: $A \times 2$
+$$\begin{pmatrix} \_\_ & \_\_ \\\\ \_\_ & \_\_ \end{pmatrix}$$
+* 연산 : $A + 10$ 
+$$\begin{pmatrix} \_\_ & \_\_ \\ \_\_ & \_\_ \end{pmatrix}$$
+* 연산: $A^2$ (칸별 제곱) 
+$$\begin{pmatrix} \_\_ & \_\_ \\ \_\_ & \_\_ \end{pmatrix}$$
 
 ### 문제 3: 숫자 개수 세기
 | 숫자판 크기 | 총 숫자 개수 |
