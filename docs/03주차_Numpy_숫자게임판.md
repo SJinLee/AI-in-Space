@@ -180,7 +180,7 @@ print("\n💡 10,000개 숫자의 평균을 한 줄에 계산! 이게 바로 AI�
 
 ---
 
-$\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\\\ \end{pmatrix}$ $\longrightarrow $
+$$A = \begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \\\\ 7 & 8 & 9 \end{pmatrix}$$
 
 ______
 
