@@ -176,7 +176,8 @@ print("\n💡 10,000개 숫자의 평균을 한 줄에 계산! 이게 바로 AI�
 ### 문제 1: 행렬 모양 맞히기
 다음 행렬의 모양(행×열)을 적으세요.
 
-행렬 $\longrightarrow$ 모양 (행×열) <br>
+행렬 $\longrightarrow$ 모양 (행×열)
+
 $\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \end{pmatrix}$ $\longrightarrow$ ______  <br>
 $\begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \end{pmatrix}$  $\longrightarrow$  ______ <br>
 $\begin{pmatrix} 1 \\\\ 2 \\\\ 3 \\\\ 4 \end{pmatrix}$  $\longrightarrow$  ______ 
