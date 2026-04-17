@@ -191,7 +191,6 @@ $$\begin{pmatrix} 1 \\\\ 2 \\\\ 3 \\\\ 4 \end{pmatrix} $$
 ### 문제 2: 행렬 연산 결과 예측
 $$A = \begin{pmatrix} 1 & 2 \\\\ 4 & 5 \end{pmatrix}$$
 
-| 연산 | 결과 |
 * 연산: $A \times 2$
 
 $$\begin{pmatrix} & \\\\ & \\\\ \\_\\_ & \\_\\_ \\\\ & \\\\ & \\\\ & \\\\ \\_\\_ & \\_\\_ \end{pmatrix}$$
