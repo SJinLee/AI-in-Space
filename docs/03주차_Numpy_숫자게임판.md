@@ -252,7 +252,12 @@ print(결과)
 - (c) 1,000개
 - (d) 10,000개
 
-**Q4.** $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$, $B = \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix}$ 일 때 $A + B$ 의 (1,1) 원소(왼쪽 위)는?
+**Q4.** $A$, $B$ 가 다음과 같을 때 $A + B$ 의 (1,1) 원소(왼쪽 위)는?
+
+$$A = \begin{pmatrix} 1 & 2 \\\\ 3 & 4 \end{pmatrix}$$
+
+$$B = \begin{pmatrix} 5 & 6 \\\\ 7 & 8 \end{pmatrix}$$
+
 - (a) 5
 - (b) 6
 - (c) 10
