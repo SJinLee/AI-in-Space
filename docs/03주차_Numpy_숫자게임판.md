@@ -178,9 +178,9 @@ print("\n💡 10,000개 숫자의 평균을 한 줄에 계산! 이게 바로 AI�
 
 | 행렬 | 모양 (행×열) |
 |---|---|
-|$\begin{matrix} 1 & 2 \\\\ 3 & 4 \end{matrix}$ | ______ |
-|$\begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \end{pmatrix}$ | ______ |
-|$\begin{pmatrix} 1 \\\\ 2 \\\\ 3 \\\\ 4 \end{pmatrix}$ | ______ |
+|$\\begin{matrix} 1 & 2 \\\\ 3 & 4 \\end{matrix}$ | ______ |
+|$\\begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \\end{pmatrix}$ | ______ |
+|$\\begin{pmatrix} 1 \\\\ 2 \\\\ 3 \\\\ 4 \\end{pmatrix}$ | ______ |
 
 ### 문제 2: 행렬 연산 결과 예측
 $$A = \begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \\\\ 7 & 8 & 9 \end{pmatrix}$$
