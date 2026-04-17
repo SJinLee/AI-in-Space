@@ -254,7 +254,7 @@ print(결과)
 
 **Q4.** $A$, $B$ 가 다음과 같을 때 $A + B$ 의 (1,1) 원소(왼쪽 위)는?
 
-$$A = \begin{pmatrix} 1 & 2 \\\\ 3 & 4 \end{pmatrix},    B = \begin{pmatrix} 5 & 6 \\\\ 7 & 8 \end{pmatrix}$$
+$$A = \begin{pmatrix} 1 & 2 \\\\ 3 & 4 \end{pmatrix}, \quad B = \begin{pmatrix} 5 & 6 \\\\ 7 & 8 \end{pmatrix}$$
 
 - (a) 5
 - (b) 6
