@@ -178,7 +178,7 @@ print("\n💡 10,000개 숫자의 평균을 한 줄에 계산! 이게 바로 AI�
 
 * 모양: ______
 
-$$\begin{matrix} 1 & 2 \\\\ 3 & 4 \end{matrix} $$
+$$\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \end{pmatrix} $$
 
 * 모양: ______
 
@@ -193,10 +193,15 @@ $$A = \begin{pmatrix} 1 & 2 \\\\ 4 & 5 \end{pmatrix}$$
 
 | 연산 | 결과 |
 * 연산: $A \times 2$
+
 $$\begin{pmatrix} \_\_ & \_\_ \\\\ \_\_ & \_\_ \end{pmatrix}$$
+
 * 연산 : $A + 10$ 
+
 $$\begin{pmatrix} \_\_ & \_\_ \\ \_\_ & \_\_ \end{pmatrix}$$
+
 * 연산: $A^2$ (칸별 제곱) 
+
 $$\begin{pmatrix} \_\_ & \_\_ \\ \_\_ & \_\_ \end{pmatrix}$$
 
 ### 문제 3: 숫자 개수 세기
