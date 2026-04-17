@@ -194,7 +194,7 @@ $$A = \begin{pmatrix} 1 & 2 \\\\ 4 & 5 \end{pmatrix}$$
 | 연산 | 결과 |
 * 연산: $A \times 2$
 
-$$\begin{pmatrix} \\_\\_ & \\_\\_ \\\\ \\_\\_ & \\_\\_ \end{pmatrix}$$
+$$\begin{pmatrix} & \\\\ \\_\\_ & \\_\\_ \\\\ & \\\\  \\_\\_ & \\_\\_ \end{pmatrix}$$
 
 * 연산 : $A + 10$ 
 
