@@ -176,11 +176,11 @@ print("\n💡 10,000개 숫자의 평균을 한 줄에 계산! 이게 바로 AI�
 ### 문제 1: 행렬 모양 맞히기
 다음 행렬의 모양(행×열)을 적으세요.
 
-$$\begin{matrix} 1 & 2 \\\\ 3 & 4 \end{matrix} \longrightarrow ______ $$
+$$\begin{matrix} 1 & 2 \\\\ 3 & 4 \end{matrix} \longrightarrow \text{______} $$
 
-$$\begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \end{pmatrix} \longrightarrow ______ $$
+$$\begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \end{pmatrix} \longrightarrow \text{______} $$
 
-$$\begin{pmatrix} 1 \\ 2 \\ 3 \\ 4 \end{pmatrix} \longrightarrow ______ $$
+$$\begin{pmatrix} 1 \\ 2 \\ 3 \\ 4 \end{pmatrix} \longrightarrow \text{______} $$
 
 ### 문제 2: 행렬 연산 결과 예측
 $$A = \begin{pmatrix} 1 & 2 \\\\ 4 & 5 \end{pmatrix}$$
