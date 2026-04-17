@@ -188,7 +188,7 @@ $\begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \end{pmatrix}$  $\longrightarrow$  ___
 $\begin{pmatrix} 1 \\\\ 2 \\\\ 3 \\\\ 4 \end{pmatrix}$  $\longrightarrow$  ______ 
 
 ### 문제 2: 행렬 연산 결과 예측
-$A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$ 일 때, 다음 결과를 채우세요.
+$$A = \begin{pmatrix} 1 & 2 & 3 \\\\ 4 & 5 & 6 \\\\ 7 & 8 & 9 \end{pmatrix}$$
 
 | 연산 | 결과 |
 |------|------|
