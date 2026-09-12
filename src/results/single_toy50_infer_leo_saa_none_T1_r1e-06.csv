@@ -1,0 +1,2 @@
+model,mode,rad,defense,trial,seed,acc,crashed,k,n_bits,n_exponent_hits,n_sign_hits,T_days,r,p,train_hours,epochs,allowed_bits,single_hit,n_train,n_test,seconds,clean_acc,last_finite_acc,ensemble_skipped,note
+toy50,infer,leo_saa,none,0,202692156000,100.0,0,0.0,1600,0,0,1.0,1e-06,,,8,,0,2000,500,0.003352100000483915,100.0,100.0,0,
