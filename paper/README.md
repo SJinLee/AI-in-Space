@@ -22,8 +22,9 @@ cd paper
 & "$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64\latexmk.exe" -xelatex main.tex
 ```
 
-한글 글꼴은 `main.tex` 상단에서 Noto Serif CJK KR → 나눔명조 → 맑은 고딕 순으로 있는 것을 자동 선택한다
-(Overleaf는 Noto, 이 PC는 맑은 고딕). 중간 산출물(`main.aux`, `main.xdv`, `build.log` 등)은 지워도 된다.
+한글 글꼴은 `main.tex` 상단에서 본문 명조 = Noto Serif CJK KR → Noto Serif KR(가변 글꼴, 굵게는 FakeBold) → 나눔명조 → 맑은 고딕,
+그림·표 제목 고딕 = Noto Sans CJK KR → 나눔고딕 → 맑은 고딕 순으로 있는 것을 자동 선택한다 (Overleaf는 Noto CJK, 이 PC는 Noto Serif KR + 나눔고딕).
+그림·표 제목은 고딕·작은 글자·양쪽 12pt 들여쓰기로 본문과 구별한다. 중간 산출물(`main.aux`, `main.xdv`, `build.log` 등)은 지워도 된다.
 
 ## 그림·표·수치 다시 만들기
 

@@ -8,11 +8,15 @@
 
 \usepackage{kotex}                      % 한글 (XeLaTeX)
 % 한글 글꼴: Overleaf에는 Noto CJK, Windows에는 맑은 고딕이 있으므로 있는 쪽을 쓴다
+% 본문 = 명조(세리프), 그림·표 제목 = 고딕(산세리프)
 \IfFontExistsTF{Noto Serif CJK KR}
   {\setmainhangulfont{Noto Serif CJK KR}\setsanshangulfont{Noto Sans CJK KR}}
-  {\IfFontExistsTF{NanumMyeongjo}
-     {\setmainhangulfont{NanumMyeongjo}\setsanshangulfont{NanumGothic}}
-     {\setmainhangulfont{Malgun Gothic}\setsanshangulfont{Malgun Gothic}}}
+  {\IfFontExistsTF{Noto Serif KR}
+     {\setmainhangulfont{Noto Serif KR}[BoldFont={Noto Serif KR},BoldFeatures={FakeBold=1.3}]
+      \IfFontExistsTF{NanumGothic}{\setsanshangulfont{NanumGothic}}{\setsanshangulfont{Malgun Gothic}}}
+     {\IfFontExistsTF{NanumMyeongjo}
+        {\setmainhangulfont{NanumMyeongjo}\setsanshangulfont{NanumGothic}}
+        {\setmainhangulfont{Malgun Gothic}\setsanshangulfont{Malgun Gothic}}}}
 \usepackage[margin=25mm]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
@@ -31,7 +35,8 @@
 \graphicspath{{figures/}}
 \input{tables/numbers}                  % \NumTrials, \CleanAcc, \PhalfNone ... (자동 생성)
 
-\captionsetup{font=small,labelfont=bf}
+% 그림·표 제목: 고딕, 작은 글자, 굵은 번호, 양쪽 12pt 들여쓰기, 둘째 줄부터 번호 뒤에 맞춤
+\captionsetup{font={small,sf},labelfont={bf,sf},labelsep=period,format=hang,margin=12pt,skip=6pt}
 \setlength{\parskip}{3pt}
 
 % 아직 데이터가 없어 채워야 하는 자리. 완성되면 \todo 를 모두 지울 것.
