@@ -153,6 +153,31 @@ If training hits NaN/Inf loss (or logits/grads/weights), `crashed=1` and we reco
 - `results/NOTES.md` — actual `N_bits`, T assumptions, what ran, timings
 - `results/ckpts/*_clean.pt` — cached clean weights for infer
 
+### 7-1. 체크포인트 재생성 / Regenerating clean checkpoints
+
+`results/ckpts/<model>_clean_n<n_train>_e<epochs>.pt` 는 **방사선을 맞히기 전의 깨끗한 학습 결과**다.
+추론(`--mode infer`) 실험은 매 시행마다 이 파일을 불러와 같은 출발점에서 비트를 뒤집는다.
+파일이 없으면 첫 실행 때 자동으로 학습해서 만들고(마스터 시드 2026), 있으면 재사용한다.
+
+| 파일 | 만드는 법 | 출처 |
+|---|---|---|
+| `mnist_linear_clean_n60000_e2.pt` (400 KB) | MNIST 6만 장, 2 epoch, CPU 약 1분 | 이 저장소에서 학습 (git에 포함) |
+| `mnist_cnn_clean_n60000_e2.pt` (864 KB) | MNIST 6만 장, 2 epoch, CPU 약 1분 | 이 저장소에서 학습 (git에 포함) |
+| `cifar_deep_clean_n10000_e6.pt` (1.2 MB) | CIFAR-10 1만 장, 6 epoch, CPU 약 2분 | 이 저장소에서 학습 (git에 포함) |
+| `resnet18_t10_clean_n10000_e8.pt` (43 MB) | torchvision의 ImageNet 사전학습 ResNet-18(`resnet18-f37072fd.pth`, 45 MB, 자동 다운로드)을 백본으로 고정하고 마지막 층만 CIFAR-10 1만 장으로 8 epoch 학습, CPU 약 2분 | **git에 포함하지 않음** (크기 때문). 아래 명령으로 재생성 |
+| `toy50_clean_n2000_e8.pt` (4 KB) | 합성 데이터 | 이 저장소에서 학습 (git에 포함) |
+
+```bash
+# resnet18 체크포인트 재생성 (처음 한 번: CIFAR-10 170MB + 사전학습 가중치 45MB 다운로드)
+python src/simulate.py --model resnet18_t10 --mode infer --rad stress --p 0.0001 --trials 1
+# 강제로 다시 학습하려면
+python src/simulate.py --model resnet18_t10 --mode infer --rad stress --p 0.0001 --trials 1 --force-ckpt
+```
+
+주의: 재생성한 resnet18 체크포인트는 백본은 같지만 마지막 층이 CPU·라이브러리 버전에 따라 미세하게 달라질 수 있다
+(논문의 무손상 정확도 39.1% 가 소수점에서 바뀔 수 있음). 논문의 E1-M·E2·E3 결과를 그대로 재현하려면
+논문 결과 CSV(`results/single_resnet18_t10_*.csv`)를 쓰고, 새 실험은 재생성한 체크포인트로 돌린 뒤 무손상 정확도를 다시 기록할 것.
+
 ---
 
 ## 8. Environment

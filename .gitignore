@@ -13,3 +13,4 @@ data/cifar-10-python.tar.gz
 data/cifar-10-batches-py/
 src/results/*.log
 paper/__pycache__/
+src/results/ckpts/resnet18_t10_clean_*.pt

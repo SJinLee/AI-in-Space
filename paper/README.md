@@ -49,6 +49,11 @@ CSV를 바꾼 뒤 이 스크립트를 다시 돌린다.
 - E5 고선량(TMR 한계 검증): `python src/run_e1_models.py --models mnist_linear --p-list 0.05 0.1 0.2 0.3 0.5 --defenses tmr parity --trials 10`
 - 수학 모델(모델 A 지수, 모델 B 로그-로지스틱)은 `paper/model_fit.py` 에 있고 `make_figures.py` 가 stress 데이터로 맞춘 뒤 E3 로 검증한다.
 
+## 체크포인트
+
+추론 실험은 `src/results/ckpts/*.pt`(방사선 전의 깨끗한 학습 결과)에서 출발한다. resnet18 체크포인트(43 MB)만
+git에 없으며, 재생성 방법은 `src/README.md` 7-1절에 있다 (첫 실행 시 자동 생성).
+
 ## 아직 비어 있는 곳
 
 `main.tex`에서 노란 상자(`\todo{...}`)로 표시한 부분은 데이터가 없어 채우지 못한 곳이다.
