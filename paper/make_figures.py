@@ -175,6 +175,49 @@ def fig_trials(df: pd.DataFrame, agg: pd.DataFrame):
     plt.close(fig)
 
 
+def fig_bimodal(df: pd.DataFrame, dfm: pd.DataFrame):
+    """이봉 분포: 전이 구간(중간 선량)의 시행별 정확도 히스토그램.
+    (a) mnist_linear, p = 0.03~0.5% (5단계 × 10회 = 50회), 방어 없음 vs 클리핑
+    (b) 네 모델 합산, 명중 10~400개 구간, 무손상 대비 정확도, 방어 없음"""
+    band = (df.p >= 3e-4) & (df.p <= 5e-3)
+    none = df[band & (df.defense == "none")].acc.values
+    clip = df[band & (df.defense == "clip")].acc.values
+    clean = float(df.clean_acc.iloc[0])
+    bins = np.arange(0, 101, 4)
+    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.3))
+    ax = axes[0]
+    ax.hist(none, bins=bins, color=COLORS["none"], alpha=0.85, label=f"방어 없음 (n={len(none)})")
+    ax.hist(clip, bins=bins, histtype="step", lw=2, color=COLORS["clip"], label=f"클리핑 (n={len(clip)})")
+    ax.axvline(0.9 * clean, ls=":", lw=1, color="#555")
+    ax.axvline(10, ls="--", lw=1, color="#999")
+    ax.text(0.9 * clean - 1, ax.get_ylim()[1] * 0.95, "생존 기준", ha="right", va="top", fontsize=7, color="#555")
+    ax.set_xlabel("시행의 정확도 (%)")
+    ax.set_ylabel("시행 수")
+    ax.set_title("(a) mnist_linear, $p$ = 0.03–0.5 %", fontsize=10)
+    ax.legend(fontsize=7, loc="upper left")
+    # (b) 네 모델 합산 (무손상 대비 %)
+    ax = axes[1]
+    m = dfm[(dfm.defense == "none")].copy()
+    m["rel"] = 100 * m.acc / m.clean_acc
+    m = m[(m.k >= 10) & (m.k <= 400)]
+    rbins = np.arange(0, 105, 4)
+    for mod in MODEL_ORDER:
+        g = m[m.model == mod]
+        if g.empty:
+            continue
+        ax.hist(g.rel, bins=rbins, histtype="step", lw=1.8, color=MODEL_COLORS[mod], label=f"{MODEL_LABEL[mod].split(' ')[0]} (n={len(g)})")
+    ax.hist(m.rel, bins=rbins, color="#999", alpha=0.25, label=f"합산 (n={len(m)})")
+    ax.axvline(90, ls=":", lw=1, color="#555")
+    ax.set_xlabel("무손상 대비 정확도 (%)")
+    ax.set_title("(b) 네 모델, 명중 10–400개, 방어 없음", fontsize=10)
+    ax.legend(fontsize=7, loc="upper left")
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(os.path.join(FIG_DIR, f"fig_bimodal.{ext}"), dpi=200)
+    plt.close(fig)
+    return len(none), len(m)
+
+
 def fmt_p(p: float) -> str:
     return f"{p * 100:g}"
 
@@ -539,6 +582,7 @@ def table_fit(fit: pd.DataFrame) -> dict:
                 vals[f"Q{tag}"] = f"{r.q:.4f}"
                 vals[f"Alpha{tag}"] = f"{r.alpha:.2f}"
                 vals[f"KfiftyA{tag}"] = f"{r.k50_exp:,.0f}"
+                vals[f"KfiftyBNone{tag}"] = f"{r.k50:,.0f}"
                 vals[f"MaeA{tag}"] = f"{r.mae_exp:.2f}"
             else:
                 lines.append(f" & 클리핑 & & & & & {r.k50:,.0f} & {r.beta:.1f} & {r.mae_ll:.2f} & {fmt_days(t50)} \\\\")
@@ -762,6 +806,133 @@ def table_e5_high(e5: pd.DataFrame, fit_e5: pd.DataFrame) -> dict:
     return vals
 
 
+# ---------------------------------------------------------------------------
+# E4: 학습 중 주입
+# ---------------------------------------------------------------------------
+def load_e4() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """반환: (stress 요약, leo_saa 요약). 기준 정확도 = 같은 모델의 p=0(방사선 없음) 학습 중앙값."""
+    files = sorted(glob.glob(os.path.join(RESULTS, "single_*_train_*.csv")))
+    if not files:
+        return pd.DataFrame(), pd.DataFrame()
+    df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
+    df = df[df.model.isin(MODEL_ORDER)].copy()
+    ctrl = (df[(df.rad == "stress") & (df.p == 0)].groupby("model").acc.median()).to_dict()
+    df["ctrl"] = df.model.map(ctrl)
+    df["survived"] = (df.acc >= 0.9 * df.ctrl).astype(float)
+    keys = ["model", "rad", "defense", "p", "train_hours"]
+    agg = (df.groupby(keys, dropna=False)  # leo_saa 행은 p 가 NaN
+             .agg(n=("acc", "size"), median_acc=("acc", "median"), q25=("acc", lambda s: s.quantile(0.25)),
+                  q75=("acc", lambda s: s.quantile(0.75)), survival=("survived", "mean"), crash=("crashed", "mean"),
+                  mean_k=("k", "mean"), n_bits=("n_bits", "first"), ctrl=("ctrl", "first"), epochs=("epochs", "first"))
+             .reset_index())
+    agg["n_w"] = agg.n_bits // 32
+    # 붕괴한 시행은 학습을 중단하므로 기록된 k 가 계획 선량보다 작다 → 기대 선량으로 통일
+    agg["k_applied"] = agg.mean_k
+    agg["mean_k"] = np.where(agg.rad == "stress", agg.p * agg.n_w, R_SEU * agg.n_bits * agg.train_hours / 24.0)
+    agg["model"] = pd.Categorical(agg.model, MODEL_ORDER, ordered=True)
+    st = agg[agg.rad == "stress"].sort_values(["model", "defense", "p"])
+    leo = agg[agg.rad == "leo_saa"].sort_values(["model", "defense", "train_hours"])
+    return st, leo
+
+
+def fig_e4(e4: pd.DataFrame, aggm: pd.DataFrame):
+    """(a) 학습 중 주입: 방어 4종의 중앙값 정확도 vs p (mnist_linear).  (b) 생존률 vs k: 학습 중 vs 추론 중."""
+    lin = e4[(e4.model == "mnist_linear") & (e4.p > 0)]
+    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.3))
+    ax = axes[0]
+    for d in ["none", "clip", "parity", "tmr"]:
+        g = lin[lin.defense == d].sort_values("p")
+        if g.empty:
+            continue
+        ax.plot(g.p * 100, g.median_acc, marker=DEF_MARKERS[d], ms=5, lw=2, color=DEF_COLORS[d], label=DEF_LABEL[d])
+    ctrl = float(lin.ctrl.iloc[0])
+    ax.axhline(ctrl, ls="--", lw=1, color="#555", label=f"방사선 없는 학습 {ctrl:.1f}%")
+    ax.axhline(0.9 * ctrl, ls=":", lw=1, color="#555")
+    ax.set_xscale("log")
+    log_axis(ax)
+    ax.set_xlabel("학습 전체에 걸친 가중치당 비트플립 확률 $p$ (%)")
+    ax.set_ylabel("학습 후 시험 정확도 (%)")
+    ax.set_ylim(0, 100)
+    ax.set_title("(a) 학습 중 주입 (E4), mnist_linear", fontsize=10)
+    ax.legend(fontsize=7, loc="lower left")
+    ax = axes[1]
+    for d in ["none", "clip"]:
+        g = lin[lin.defense == d].sort_values("mean_k")
+        h = aggm[(aggm.model == "mnist_linear") & (aggm.defense == d)].sort_values("mean_k")
+        ax.plot(h.mean_k, h.survival, marker=MARKERS[d], ms=4, lw=1.5, ls="--", color=COLORS[d], alpha=0.7, label=f"{LABELS[d]}, 추론 중 (E1)")
+        ax.plot(g.mean_k, g.survival, marker=MARKERS[d], ms=6, lw=2.2, color=COLORS[d], label=f"{LABELS[d]}, 학습 중 (E4)")
+    ax.axhline(0.5, ls=":", lw=1, color="#555")
+    ax.set_xscale("log")
+    log_axis(ax)
+    ax.set_xlabel("평균 명중 수 $\\bar{k}$")
+    ax.set_ylabel("생존률")
+    ax.set_ylim(-0.05, 1.05)
+    ax.set_title("(b) 같은 명중 수에서 학습 중 vs 추론 중", fontsize=10)
+    ax.legend(fontsize=7, loc="lower left")
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(os.path.join(FIG_DIR, f"fig_e4_train.{ext}"), dpi=200)
+    plt.close(fig)
+
+
+def table_e4(e4: pd.DataFrame, leo: pd.DataFrame, fit: pd.DataFrame) -> dict:
+    vals = {}
+    lin = e4[e4.model == "mnist_linear"]
+    ps = sorted(lin[lin.p > 0].p.unique())
+    defs = [d for d in ["none", "clip", "parity", "tmr"] if d in set(lin.defense)]
+    lines = [r"\setlength{\tabcolsep}{3pt}", r"\begin{tabular}{l" + "r" * len(ps) + "}", r"\toprule",
+             "방어 & " + " & ".join(f"$p$={fmt_p(p)}\\%" for p in ps) + r" \\",
+             r" & " + " & ".join(f"$\\bar{{k}}\\approx${int(round(lin[(lin.p == p)].mean_k.mean())):,}" for p in ps) + r" \\", r"\midrule"]
+    for d in defs:
+        g = lin[lin.defense == d].set_index("p")
+        cells = [f"{g.loc[p].median_acc:.1f} ({g.loc[p].survival:.1f})" if p in g.index else "---" for p in ps]
+        lines.append(f"{DEF_SHORT[d]} & " + " & ".join(cells) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    with open(os.path.join(TAB_DIR, "table_e4.tex"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    vals["EfourCtrl"] = f"{float(lin.ctrl.iloc[0]):.2f}"
+    # 학습 중 k50 (모델 B 적합) vs 추론 중
+    for d in ["none", "clip"]:
+        g = lin[(lin.defense == d) & (lin.p > 0)]
+        if len(g) >= 3:
+            k50, beta = MF.fit_loglogistic(g.mean_k.values, g.survival.values, g.n.values)
+            kmax = float(g.mean_k.max())
+            vals[f"EfourKfifty{'None' if d == 'none' else 'Clip'}"] = (f">{kmax:,.0f}" if k50 > 3 * kmax else f"{k50:,.0f}")
+        for p, tag in [(1e-3, "OneEmThree"), (1e-2, "OneEmTwo"), (1e-1, "OneEmOne")]:
+            r = lin[(lin.defense == d) & np.isclose(lin.p, p)]
+            if not r.empty:
+                vals[f"Efour{tag}{'None' if d == 'none' else 'Clip'}Med"] = f"{r.median_acc.iloc[0]:.1f}"
+                vals[f"Efour{tag}{'None' if d == 'none' else 'Clip'}Surv"] = f"{r.survival.iloc[0]:.1f}"
+                vals[f"Efour{tag}{'None' if d == 'none' else 'Clip'}Crash"] = f"{r.crash.iloc[0]:.1f}"
+    # leo_saa 학습: 시간 → 실측 vs 추론용 모델 A 예측
+    if not leo.empty:
+        ll = leo[leo.model == "mnist_linear"]
+        lines = [r"\begin{tabular}{rrr|rrr|rr}", r"\toprule",
+                 r"학습 시간 & 일수 & 기대 $k$ & \multicolumn{3}{c|}{방어 없음} & \multicolumn{2}{c}{클리핑} \\",
+                 r"(h) & & & 생존률 & 붕괴율 & 추론 모형 예측 & 생존률 & 붕괴율 \\", r"\midrule"]
+        for h in sorted(ll.train_hours.unique()):
+            a = ll[(ll.defense == "none") & (ll.train_hours == h)]
+            b = ll[(ll.defense == "clip") & (ll.train_hours == h)]
+            kexp = float((a if not a.empty else b).mean_k.iloc[0])
+            pred = float(MF.predict_survival(fit, "mnist_linear", "none", kexp))
+            lines.append(f"{h:g} & {h / 24:g} & {kexp:,.0f} & " + (f"{a.survival.iloc[0]:.1f} & {a.crash.iloc[0]:.1f} & {pred:.2f}" if not a.empty else "--- & --- & ---") +
+                         " & " + (f"{b.survival.iloc[0]:.1f} & {b.crash.iloc[0]:.1f}" if not b.empty else "--- & ---") + r" \\")
+        lines += [r"\bottomrule", r"\end{tabular}"]
+        with open(os.path.join(TAB_DIR, "table_e4_leo.tex"), "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+    # mnist_cnn 소규모
+    cnn = e4[(e4.model == "mnist_cnn")]
+    if not cnn.empty:
+        vals["EfourCnnCtrl"] = f"{float(cnn.ctrl.iloc[0]):.2f}"
+        for p, tag in [(1e-3, "OneEmThree"), (1e-2, "OneEmTwo")]:
+            for d in ["none", "clip"]:
+                r = cnn[(cnn.defense == d) & np.isclose(cnn.p, p)]
+                if not r.empty:
+                    vals[f"EfourCnn{tag}{'None' if d == 'none' else 'Clip'}Med"] = f"{r.median_acc.iloc[0]:.1f}"
+                    vals[f"EfourCnn{tag}{'None' if d == 'none' else 'Clip'}Surv"] = f"{r.survival.iloc[0]:.1f}"
+    return vals
+
+
 def worked_example(fit: pd.DataFrame) -> dict:
     """본문 예시: 보편 q 로 임의 모델의 T50 예측 (ResNet-50 2,560만, 1억 파라미터)."""
     q_med = float(fit[fit.defense == "none"].q.median())
@@ -790,6 +961,8 @@ if __name__ == "__main__":
     fig_models(aggm)
     fig_models_hits(aggm)
     vals_m = table_models(aggm)
+    n_a, n_b = fig_bimodal(df, dfm)
+    vals_m["BimodalNa"], vals_m["BimodalNb"] = str(n_a), str(n_b)
     # 수학 모델 피팅 (stress 데이터만) + E3 검증 + E5
     fit = MF.fit_all(aggm, POS_FRAC)
     print(fit.round(4).to_string(index=False))
@@ -815,6 +988,12 @@ if __name__ == "__main__":
         print(e2.round(3).to_string(index=False))
         fig_e2(e2)
         vals_m.update(table_e2(e2, fit))
+    e4, e4leo = load_e4()
+    if not e4.empty:
+        print(e4.round(3).to_string(index=False))
+        print(e4leo.round(3).to_string(index=False))
+        fig_e4(e4, aggm)
+        vals_m.update(table_e4(e4, e4leo, fit))
     with open(os.path.join(TAB_DIR, "numbers.tex"), "a", encoding="utf-8") as f:
         f.write("% --- E1-M 모델 크기 축 / 수학 모델 / E3 / E5 ---\n")
         for k, v in vals_m.items():

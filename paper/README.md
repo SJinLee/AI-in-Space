@@ -47,6 +47,8 @@ CSV를 바꾼 뒤 이 스크립트를 다시 돌린다.
 - E2 비트별 치명도: `python src/run_e1_models.py --models mnist_linear --bits 31 30 29 28 27 26 25 24 23 22 16 10 0 --defenses none clip --trials 50`
   (다른 모델은 `--defenses none --trials 30`)
 - E5 고선량(TMR 한계 검증): `python src/run_e1_models.py --models mnist_linear --p-list 0.05 0.1 0.2 0.3 0.5 --defenses tmr parity --trials 10`
+- E4 학습 중 주입: `python src/run_e1_models.py --models mnist_linear --mode train --p-list 0 1e-4 3e-4 1e-3 3e-3 1e-2 3e-2 1e-1 --defenses none clip parity tmr --trials 10`
+  (궤도 모드: `--mode train --rad leo_saa --train-hours 24 168 720 2160 --defenses none clip`; mnist_cnn 은 `--p-list 0 1e-3 1e-2 --defenses none clip --trials 5`, 셀당 약 5분)
 - 수학 모델(모델 A 지수, 모델 B 로그-로지스틱)은 `paper/model_fit.py` 에 있고 `make_figures.py` 가 stress 데이터로 맞춘 뒤 E3 로 검증한다.
 
 ## 체크포인트

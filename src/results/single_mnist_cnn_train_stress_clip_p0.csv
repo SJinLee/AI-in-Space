@@ -1,0 +1,6 @@
+model,mode,rad,defense,trial,seed,acc,crashed,k,n_bits,n_exponent_hits,n_sign_hits,T_days,r,p,train_hours,epochs,allowed_bits,single_hit,n_train,n_test,seconds,clean_acc,last_finite_acc,ensemble_skipped,note
+mnist_cnn,train,stress,clip,0,202626998000,98.87,0,0.0,7042048,0,0,1.0,1e-06,0.0,24.0,2,,0,60000,10000,58.82488060000469,,98.87,0,
+mnist_cnn,train,stress,clip,1,202626998001,98.65,0,0.0,7042048,0,0,1.0,1e-06,0.0,24.0,2,,0,60000,10000,55.034898600017186,,98.65,0,
+mnist_cnn,train,stress,clip,2,202626998002,98.78,0,0.0,7042048,0,0,1.0,1e-06,0.0,24.0,2,,0,60000,10000,55.967618599999696,,98.78,0,
+mnist_cnn,train,stress,clip,3,202626998003,98.58,0,0.0,7042048,0,0,1.0,1e-06,0.0,24.0,2,,0,60000,10000,53.12857069997699,,98.58,0,
+mnist_cnn,train,stress,clip,4,202626998004,98.65,0,0.0,7042048,0,0,1.0,1e-06,0.0,24.0,2,,0,60000,10000,54.333817100006854,,98.65,0,
