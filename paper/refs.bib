@@ -1,0 +1,160 @@
+% 제출 전에 각 항목의 서지 정보(권·호·쪽수)를 원문과 대조할 것.
+
+@article{baumann2005,
+  author  = {Baumann, Robert C.},
+  title   = {Radiation-induced soft errors in advanced semiconductor technologies},
+  journal = {IEEE Transactions on Device and Materials Reliability},
+  volume  = {5},
+  number  = {3},
+  pages   = {305--316},
+  year    = {2005}
+}
+
+@article{normand1996,
+  author  = {Normand, Eugene},
+  title   = {Single-event effects in avionics},
+  journal = {IEEE Transactions on Nuclear Science},
+  volume  = {43},
+  number  = {2},
+  pages   = {461--474},
+  year    = {1996}
+}
+
+@article{barth2003,
+  author  = {Barth, Janet L. and Dyer, C. S. and Stassinopoulos, E. G.},
+  title   = {Space, atmospheric, and terrestrial radiation environments},
+  journal = {IEEE Transactions on Nuclear Science},
+  volume  = {50},
+  number  = {3},
+  pages   = {466--482},
+  year    = {2003}
+}
+
+@article{lyons1962,
+  author  = {Lyons, R. E. and Vanderkulk, W.},
+  title   = {The use of triple-modular redundancy to improve computer reliability},
+  journal = {IBM Journal of Research and Development},
+  volume  = {6},
+  number  = {2},
+  pages   = {200--209},
+  year    = {1962}
+}
+
+@misc{ieee754,
+  author       = {{IEEE}},
+  title        = {{IEEE} Standard for Floating-Point Arithmetic},
+  howpublished = {IEEE Std 754-2019},
+  year         = {2019}
+}
+
+@inproceedings{li2017,
+  author    = {Li, Guanpeng and Hari, Siva Kumar Sastry and Sullivan, Michael and Tsai, Timothy and Pattabiraman, Karthik and Emer, Joel and Keckler, Stephen W.},
+  title     = {Understanding error propagation in deep learning neural network ({DNN}) accelerators and applications},
+  booktitle = {Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis (SC '17)},
+  year      = {2017}
+}
+
+@inproceedings{reagen2018,
+  author    = {Reagen, Brandon and Gupta, Udit and Pentecost, Lillian and Whatmough, Paul and Lee, Sae Kyu and Mulholland, Niamh and Brooks, David and Wei, Gu-Yeon},
+  title     = {Ares: A framework for quantifying the resilience of deep neural networks},
+  booktitle = {Proceedings of the 55th Design Automation Conference (DAC)},
+  year      = {2018}
+}
+
+@inproceedings{hoang2020,
+  author    = {Hoang, Le-Ha and Hanif, Muhammad Abdullah and Shafique, Muhammad},
+  title     = {{FT-ClipAct}: Resilience analysis of deep neural networks and improving their fault tolerance using clipped activation},
+  booktitle = {Design, Automation \& Test in Europe Conference (DATE)},
+  year      = {2020}
+}
+
+@inproceedings{chen2019,
+  author    = {Chen, Zitao and Li, Guanpeng and Pattabiraman, Karthik and DeBardeleben, Nathan},
+  title     = {{BinFI}: An efficient fault injector for safety-critical machine learning systems},
+  booktitle = {Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis (SC '19)},
+  year      = {2019}
+}
+
+@article{lecun1998,
+  author  = {LeCun, Yann and Bottou, L{\'e}on and Bengio, Yoshua and Haffner, Patrick},
+  title   = {Gradient-based learning applied to document recognition},
+  journal = {Proceedings of the IEEE},
+  volume  = {86},
+  number  = {11},
+  pages   = {2278--2324},
+  year    = {1998}
+}
+
+@inproceedings{paszke2019,
+  author    = {Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam and Bradbury, James and Chanan, Gregory and Killeen, Trevor and Lin, Zeming and Gimelshein, Natalia and Antiga, Luca and others},
+  title     = {{PyTorch}: An imperative style, high-performance deep learning library},
+  booktitle = {Advances in Neural Information Processing Systems 32},
+  year      = {2019}
+}
+
+% --- 궤도 SEU 발생률 (2026-10-16 추가) ---
+@inproceedings{bentoutou2008,
+  author    = {Bentoutou, Youcef and Djaifri, Mohammed},
+  title     = {Observations of single-event upsets and multiple-bit upsets in random access memories on-board the {Algerian} satellite},
+  booktitle = {2008 IEEE Nuclear Science Symposium Conference Record},
+  pages     = {2568--2570},
+  year      = {2008}
+}
+% bentoutou2008: Alsat-1, 686 km SSO, commercial SRAM, about 1e-6 upsets/bit/day
+
+@inproceedings{samaras2015,
+  author    = {Samaras, A. and Vandevelde, B. and Sukhaseum, N. and Chatry, N. and Rodriguez, A. and Wrobel, F. and Bezerra, F. and Lorfevre, E. and Ecoffet, R.},
+  title     = {{CARMEN1} and {CARMEN2} experiment: Comparison between in-flight measured {SEE} rates and predictions},
+  booktitle = {Proceedings of the European Conference on Radiation and Its Effects on Components and Systems (RADECS)},
+  year      = {2015}
+}
+% samaras2015: CARMEN-2 on JASON-2, 1336 km. 제출 전 정확한 제목·쪽수 확인 필요
+
+@misc{wang2024,
+  author        = {Wang, Meiqi and Qiu, Han and Xu, Longnv and Wang, Di and Li, Yuanjie and Zhang, Tianwei and Liu, Jun and Li, Hewu},
+  title         = {A case for application-aware space radiation tolerance in orbital computing},
+  howpublished  = {arXiv:2407.11853},
+  year          = {2024}
+}
+% wang2024: CARMEN-2 기록을 약 4.76e-7 upsets/bit/day 로 읽음 (2차 출처)
+
+% --- 선행 연구 비교 (2026-10-16 추가) ---
+@inproceedings{hong2019,
+  author    = {Hong, Sanghyun and Frigo, Pietro and Kaya, Yi{\u g}itcan and Giuffrida, Cristiano and Dumitra{\c s}, Tudor},
+  title     = {Terminal brain damage: Exposing the graceless degradation in deep neural networks under hardware fault attacks},
+  booktitle = {Proceedings of the 28th USENIX Security Symposium},
+  pages     = {497--514},
+  year      = {2019}
+}
+
+@misc{yan2019,
+  author       = {Yan, Zheyu and Shi, Yiyu and Liao, Wang and Hashimoto, Masanori and Zhou, Xichuan and Zhuo, Cheng},
+  title        = {When single event upset meets deep neural networks: Observations, explorations, and remedies},
+  howpublished = {arXiv:1909.04697},
+  year         = {2019}
+}
+
+@inproceedings{stutz2021,
+  author    = {Stutz, David and Chandramoorthy, Nandhini and Hein, Matthias and Schiele, Bernt},
+  title     = {Bit error robustness for energy-efficient {DNN} accelerators},
+  booktitle = {Proceedings of Machine Learning and Systems (MLSys)},
+  volume    = {3},
+  year      = {2021}
+}
+
+@article{cai2024,
+  author  = {Cai, Yulong and Cai, Ming and Wu, Yanlai and Lu, Jian and Bian, Zeyu and Liu, Bingkai and Cui, Shuai},
+  title   = {Evaluation and mitigation of weight-related single event upsets in a convolutional neural network},
+  journal = {Electronics},
+  volume  = {13},
+  number  = {7},
+  pages   = {1296},
+  year    = {2024}
+}
+
+@misc{lange2024,
+  author       = {Lange, Kevin and Fontana, Federico and Rossi, Francesco and Varile, Mattia and Apruzzese, Giovanni},
+  title        = {Machine learning in space: Surveying the robustness of on-board {ML} models to radiation},
+  howpublished = {arXiv:2405.02642},
+  year         = {2024}
+}

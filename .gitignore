@@ -1,2 +1,14 @@
 src/__pycache__/
 data/MNIST/
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.xdv
+paper/build.log
+data/cifar-10-python.tar.gz
+data/cifar-10-batches-py/
+src/results/*.log
