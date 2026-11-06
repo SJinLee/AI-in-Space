@@ -50,6 +50,8 @@ CSV를 바꾼 뒤 이 스크립트를 다시 돌린다.
 - E5 고선량(TMR 한계 검증): `python src/run_e1_models.py --models mnist_linear --p-list 0.05 0.1 0.2 0.3 0.5 --defenses tmr parity --trials 10`
 - E4 학습 중 주입: `python src/run_e1_models.py --models mnist_linear --mode train --p-list 0 1e-4 3e-4 1e-3 3e-3 1e-2 3e-2 1e-1 --defenses none clip parity tmr --trials 10`
   (궤도 모드: `--mode train --rad leo_saa --train-hours 24 168 720 2160 --defenses none clip`; mnist_cnn 은 `--p-list 0 1e-3 1e-2 --defenses none clip --trials 5`, 셀당 약 5분)
+  **2026-11-06 논문 본문에서 제외.** 초록·설계·4.9절·결론 등에서 뺀 원문은 `e4_training_injection.tex`에 자리 표시와 함께 보관했다
+  (다음 논문용). `make_figures.py`는 지금도 `fig_e4_train`, `table_e4*.tex`, `\Efour...` 매크로를 만들지만 `main.tex`는 쓰지 않는다.
 - 수학 모델(모델 A 지수, 모델 B 로그-로지스틱)은 `paper/model_fit.py` 에 있고 `make_figures.py` 가 stress 데이터로 맞춘 뒤 E3 로 검증한다.
 
 ## 체크포인트
