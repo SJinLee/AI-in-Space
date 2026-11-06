@@ -134,6 +134,13 @@ $1.0$은 $S=0$, $E=127$, $M=0$이므로 비트열은 \code{0 01111111 000\ldots0
 즉 32비트 중 31개는 값을 2배 이내로 바꾸거나 부호만 바꾸고, bit~30 하나만 $10^{38}$배 또는 $\infty$를 만든다.
 \end{example}
 
+\begin{note}[float32에 $\infty$와 NaN이 있는 이유]
+\label{note:nan}
+IEEE~754가 $\pm\infty$와 NaN(Not a Number)을 둔 것은 ``계산이 중간에 멈추지 않고 끝까지 가되, 문제가 생겼다는 사실은 결과에 남게 하자''는 설계이다. (1) $\infty$는 넘침(overflow)을 위한 값이다. float32의 최댓값은 약 $3.4\times10^{38}$인데, 그보다 큰 결과가 나왔을 때 프로그램을 멈추거나 틀린 값으로 되돌아가는(정수 overflow처럼) 대신 ``너무 커서 표현 못 함''을 뜻하는 $\infty$를 돌려준다. $1/0=\infty$, $1/\infty=0$처럼 극한과 일치하는 산술이 이어진다. (2) NaN은 답이 정해지지 않는 연산을 위한 값이다. $0/0$, $\infty-\infty$, $0\times\infty$, $\sqrt{-1}$은 어떤 수로도 답할 수 없으므로 NaN을 돌려주고, NaN이 섞인 모든 연산은 다시 NaN이 된다. 그래서 긴 계산의 어디에서 문제가 생겼든 최종 결과에 NaN이 남아 ``무효''임을 알 수 있다(NaN은 자기 자신과도 같지 않아 검사할 수 있다). (3) 비트 배치에서는 지수 8비트가 모두 1인 패턴($E=255$)을 수로 쓰지 않고 이 특수값에 예약하였다. 가수가 0이면 $\pm\infty$, 0이 아니면 NaN이다. 그래서 지수의 최댓값은 $E=254$($2^{127}$)까지이다.
+
+이 예약이 본 연구와 직접 이어진다. $1.0$(지수 $01111111$)의 bit~30을 뒤집으면 지수가 $11111111$이 되어 수가 아닌 $+\infty$가 되는 것(예~\ref{ex:float32})이 그 때문이고, $\infty$가 로짓에 들어가면 softmax에서 $\infty-\infty=$ NaN이 생겨 전파 규칙에 따라 출력 전체가 NaN이 된다. 본 논문의 ``붕괴'' 지표(3.3절)는 이 전파 성질을 그대로 이용한 것이며, 클리핑 방어의 첫 단계가 \code{nan\_to\_num}인 이유도 NaN을 그대로 두면 아무리 작은 비율이라도 결과 전체가 무효가 되기 때문이다.
+\end{note}
+
 \begin{figure}[H]
   \centering
   \begin{tikzpicture}[x=0.36cm,y=0.8cm,font=\scriptsize]
@@ -190,8 +197,21 @@ u[i] ^= np.uint32(1) << np.uint32(b)  # (3) xor  : flip bit b of weight i
 \begin{itemize}[leftmargin=*]
   \item \textbf{stress}: 각 가중치를 독립적으로 확률 $p$로 명중시키고, 명중한 가중치의 무작위 비트 하나를 뒤집는다. 시간 개념이 없는 가속 실험으로, 기대 명중 수는 $\mathbb{E}[k]=p\,N_w$이다.
   \item \textbf{poisson}: 발생률 $r$ [SEU/bit/day]로 노출 시간 $T$ [day] 동안의 창 $[0,T]$에서 균일한 푸아송 과정. 기대 명중 수는 $\lambda = r\,N_{\mathrm{bits}}\,T$ [SEU].
-  \item \textbf{leo\_saa}: 하루에 SAA 통과 3회(각 12분)를 두고 하루 SEU의 90\,\%를 통과 구간에 몰아넣은 비균일 푸아송 과정(통과 중 발생률 $\approx36r$, 평시 $\approx0.10r$).
+  \item \textbf{leo\_saa}: 하루에 SAA 통과 3회(각 12분)를 두고 하루 SEU의 90\,\%를 통과 구간에 몰아넣은 비균일 푸아송 과정(통과 중 발생률 $\approx36r$, 평시 $\approx0.10r$, 노트~\ref{note:saa}).
 \end{itemize}
+
+\begin{note}[SAA 통과 중 발생률 $36r$과 평시 $0.10r$의 계산]
+\label{note:saa}
+하루 평균 발생률이 $r$이면 하루의 기대 명중은 비트당 $r\times1$일이다. 통과 구간은 $3\times12=36$분으로 하루 $1440$분의 $36/1440=1/40=2.5\,\%$이고, 여기에 하루 명중의 $90\,\%$를 넣는다. 통과 중 발생률을 $r_{\mathrm{saa}}$라 하면 $r_{\mathrm{saa}}\times\tfrac{36}{1440}=0.9\,r$이므로
+\[
+  r_{\mathrm{saa}} = 0.9\times\frac{1440}{36}\,r = 0.9\times40\,r = 36\,r .
+\]
+나머지 $10\,\%$는 평시 $1440-36=1404$분에 고르게 퍼지므로 $r_{\mathrm{quiet}}\times\tfrac{1404}{1440}=0.1\,r$, 즉
+\[
+  r_{\mathrm{quiet}} = 0.1\times\frac{1440}{1404}\,r \approx 0.1026\,r \approx 0.10\,r .
+\]
+검산하면 $36r\times0.025+0.1026r\times0.975=0.9r+0.1r=r$로 하루 평균이 보존된다. 통과 중 발생률은 평시의 약 350배이며, 12분 통과 한 번에 들어오는 명중은 하루 전체의 $30\,\%$($0.9/3$)이다. 예컨대 \code{mnist\_linear}($N_{\mathrm{bits}}=\NumBits{}$)는 $r=10^{-6}$에서 하루 약 \LeoFlipsPerDay{}개를 받으므로 통과 한 번에 약 1개, 평시 23.4시간 동안 약 0.3개꼴이다.
+\end{note}
 본 논문의 주 실험(E1)은 stress 모드만 사용하였다. 결과 해석을 위해, stress 모드의 기대 명중 수 $p\,N_w$와 궤도 노출 $T$일의 기대 명중 수 $r\,N_{\mathrm{bits}}\,T$를 같게 놓아, $p$와 같은 기대 명중 수를 주는 LEO 노출 일수를
 \begin{equation}
   T_{\mathrm{eq}} = \frac{p\,N_w}{r\,N_{\mathrm{bits}}} = \frac{p}{32\,r}
@@ -210,21 +230,23 @@ $r=10^{-6}$/bit/day이면 $T_{\mathrm{eq}}=p/(3.2\times10^{-5})$이므로 $p=0.0
 \subsection{모델과 데이터}
 주 실험(E1)의 모델은 MNIST 손글씨 데이터~\citep{lecun1998}(학습 60{,}000장, 시험 10{,}000장)에 대해 $784\to128\to10$의 2층 완전연결 신경망(ReLU)을 SGD(학습률 0.05, 모멘텀 0.9, 배치 128)로 2 epoch 학습한 것이다. 깨끗한 모델의 시험 정확도는 \CleanAcc{}\,\%이며, 이 가중치를 체크포인트로 저장해 모든 시행이 같은 출발점에서 시작하도록 하였다. 뒤집을 수 있는 가중치는 $N_w=\NumWeights{}$개, $N_{\mathrm{bits}}=\NumBits{}$비트이다.
 
-이 모델은 문헌~\citep{hong2019}의 MNIST 완전연결 기본 모델과 같은 부류이며, 시행 하나가 1초 미만이라 13단계 선량에 10회 반복이 가능하다는 점에서 선택하였다. 그러나 2층 구조로는 깊이가 결과에 영향을 주는지 알 수 없고, MNIST는 클래스 간 여유가 커서 손상에 관대하며, 무엇보다 LEO 일수 환산이 모델 크기에 반비례한다. 그래서 모델 크기 축(E1-M)으로 표~\ref{tab:model}의 세 모델을 추가하였다. 합성곱 모델 \code{mnist\_cnn}, CIFAR-10의 6층 합성곱 모델 \code{cifar\_deep}(학습 10{,}000장, 6 epoch), 그리고 ImageNet 사전학습 ResNet-18~\citep{he2016}(torchvision 배포 가중치~\citep{torchvision})의 백본을 고정하고 마지막 층만 CIFAR-10(32$\times$32, 학습 10{,}000장, 8 epoch)에 학습한 \code{resnet18\_t10}이다. 따라서 \code{resnet18\_t10}의 가중치 비트는 대부분 배포된 사전학습 값이고, 나머지 세 모델의 가중치는 본 연구에서 처음부터 학습한 값이다. 모든 깨끗한 체크포인트는 저장소에서 재생성할 수 있다. 뒤의 두 모델은 CPU 예산 때문에 무손상 정확도가 낮지만(각 \CleanCifar{}\,\%, \CleanResnet{}\,\%), 생존률은 무손상 대비로 재므로 모델 크기 효과를 보는 데는 충분하다.
+이 모델은 문헌~\citep{hong2019}의 MNIST 완전연결 기본 모델과 같은 부류이며, 시행 하나가 1초 미만이라 13단계 선량에 10회 반복이 가능하다는 점에서 선택하였다. 그러나 2층 구조로는 깊이가 결과에 영향을 주는지 알 수 없고, MNIST는 클래스 간 여유가 커서 손상에 관대하며, 무엇보다 LEO 일수 환산이 모델 크기에 반비례한다. 그래서 모델 크기 축(E1-M)으로 표~\ref{tab:model}의 세 모델을 추가하였다. 합성곱 모델 \code{mnist\_cnn}, CIFAR-10의 6층 합성곱 모델 \code{cifar\_deep}(학습 10{,}000장, 6 epoch), 그리고 ImageNet 사전학습 ResNet-18~\citep{he2016}(torchvision 배포 가중치~\citep{torchvision})의 백본을 고정하고 마지막 층만 CIFAR-10(32$\times$32, 학습 10{,}000장, 8 epoch)에 학습한 \code{resnet18\_t10}이다. MNIST 모델은 시험 10{,}000장 전체로 평가하고, CIFAR-10 두 모델은 실행 시간을 줄이기 위해 시험 집합의 앞 2{,}000장으로 평가한다(모든 시행에 같은 2{,}000장). 여기서 \emph{백본}(backbone)이란 입력 영상에서 특징(feature)을 뽑아내는 신경망의 앞부분 전체를 말한다. ResNet-18에서는 첫 합성곱층, 잔차 블록 8개(합성곱층 16개)와 배치정규화층이 백본이고, 그 끝에 붙은 완전연결층 $512\to10$이 분류기(head)이다. 본 연구는 백본의 가중치 약 1{,}117만 개를 ImageNet에서 학습된 값 그대로 고정하고(\code{requires\_grad=False}), 분류기의 파라미터 5{,}130개만 CIFAR-10으로 학습하였다. 입력은 $32\times32$를 $224\times224$로 키우지 않고 그대로 넣었으므로(CPU 예산) 무손상 정확도가 낮다. 그러나 비트플립은 고정된 백본을 포함한 모든 2차원 이상 가중치에 가해지므로 $N_w$는 백본을 포함한 \NwResnet{}개이다. 따라서 \code{resnet18\_t10}의 가중치 비트는 대부분 배포된 사전학습 값이고, 나머지 세 모델의 가중치는 본 연구에서 처음부터 학습한 값이다. 표~\ref{tab:model}에 네 모델의 구조·데이터·파라미터를 정리하였다. 모든 깨끗한 체크포인트는 저장소에서 재생성할 수 있다. 뒤의 두 모델은 CPU 예산 때문에 무손상 정확도가 낮지만(각 \CleanCifar{}\,\%, \CleanResnet{}\,\%), 생존률은 무손상 대비로 재므로 모델 크기 효과를 보는 데는 충분하다.
 
 \begin{table}[H]
   \centering\scriptsize
-  \caption{실험에 사용한 모델. 편향과 배치 정규화 파라미터(1차원 텐서)는 뒤집지 않으므로 $N_w$에 포함하지 않는다.}
+  \caption{실험에 사용한 네 모델의 구조·데이터·파라미터. ``학습 대상''은 본 연구에서 SGD로 갱신한 파라미터 수, $N_w$는 비트플립 대상(2차원 이상 텐서의 원소; 편향과 배치정규화 파라미터는 1차원이라 제외), $N_{\mathrm{bits}}=32N_w$이다. \code{resnet18\_t10}의 배치정규화 통계(9{,}620개)는 파라미터가 아니므로 뒤집지 않는다.}
   \label{tab:model}
-  \begin{tabular}{llrrr}
+  \setlength{\tabcolsep}{2.5pt}
+  \begin{tabular}{llrrrrrr}
     \toprule
-    이름 & 구조 (데이터) & $N_w$ & $N_{\mathrm{bits}}$ & 무손상 \\
+    모델 & 구조 (데이터) & \multicolumn{2}{c}{데이터(장)} & epoch/ & 파라미터 & $N_w$ & 무손상 \\
+    \cmidrule(lr){3-4}
+     & & 학습 & 시험 & lr/배치 & (학습 대상) & & 정확도(\%) \\
     \midrule
-    \code{mnist\_linear} & $784\to128\to10$, ReLU (MNIST, 주 실험) & \NumWeights{} & \NumBits{} & \CleanAcc{}\,\% \\
-    \code{mnist\_cnn} & Conv32--Conv64--FC64--FC10 (MNIST) & \NwCnn{} & 7{,}042{,}048 & \CleanCnn{}\,\% \\
-    \code{cifar\_deep} & 합성곱 6층 + FC (CIFAR-10) & \NwCifar{} & 9{,}825{,}280 & \CleanCifar{}\,\% \\
-    \code{resnet18\_t10} & ResNet-18, 사전학습 백본 고정 (CIFAR-10) & \NwResnet{} & 357{,}505{,}024 & \CleanResnet{}\,\% \\
-    \code{toy50} & $\mathrm{Linear}(50\to1)$, 부호 일치율 (수업용) & 50 & 1{,}600 & 100\,\% \\
+    \code{mnist\_linear} & FC 784--128--10 (MNIST) & 60,000 & 10,000 & 2/0.05/128 & 101,770 (전부) & \NwLinear{} & \CleanLinear{} \\
+    \code{mnist\_cnn} & Conv$\times$2, FC$\times$2 (MNIST) & 60,000 & 10,000 & 2/0.05/128 & 220,234 (전부) & \NwCnn{} & \CleanCnn{} \\
+    \code{cifar\_deep} & Conv$\times$6, FC (CIFAR-10) & 10,000 & 2,000 & 6/0.05/64 & 307,498 (전부) & \NwCifar{} & \CleanCifar{} \\
+    \code{resnet18\_t10} & ResNet-18 고정+FC (CIFAR-10) & 10,000 & 2,000 & 8/0.01/64 & 11,181,642 (5,130) & \NwResnet{} & \CleanResnet{} \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -523,7 +545,7 @@ bit~30 단일 명중의 생존률은 \code{mnist\_linear} \SthirtyEtwoLinear{} \
   \item \textbf{$r$은 두 위성의 측정값으로 고정하였다.} $r=10^{-6}$/bit/day는 Alsat-1(686\,km)과 JASON-2(1{,}336\,km)의 상용 메모리 측정값~\citep{bentoutou2008,samaras2015,wang2024} 범위 안에 있으나, 실제 SEU 율은 소자·고도·차폐·태양 활동에 따라 수 자릿수 범위로 달라진다~\citep{barth2003}. 특히 업셋의 80\,\% 이상이 SAA 통과 중에 생기고, 400\,km급 궤도는 JASON-2보다 환경이 온화하며, 최신 DRAM은 훨씬 낮은 값이 보고되기도 한다.
   \item \textbf{가중치만 뒤집었다.} 활성값·그래디언트·옵티마이저 상태·명령어 메모리의 비트플립과 다중 비트 오류(MBU), 총이온화선량(TID)은 다루지 않았다.
   \item \textbf{자료형이 하나이고, 큰 모델은 정확도가 낮다.} float32만 실험하였다. 실제 탑재용 신경망은 int8 양자화를 흔히 쓰며, 정수형에서는 지수부가 없어 결과가 달라질 수 있다. 또한 \code{cifar\_deep}과 \code{resnet18\_t10}은 CPU 예산 때문에 무손상 정확도가 \CleanCifar{}\,\%, \CleanResnet{}\,\%에 그쳐, 생존률은 무손상 대비로 재더라도 ``여유가 작은 모델''의 결과로 읽어야 한다. 충분히 학습된 ResNet-18(정확도 90\,\% 이상)에서는 클리핑의 이득이 더 클 수 있다.
-  \item \textbf{반복 10회.} 생존률의 95\,\% 신뢰구간이 넓다(10회 중 6회 생존이면 대략 0.3--0.85). $p_{50}$의 추정값도 보간에 의존한다.
+  \item \textbf{반복 10회, CIFAR 평가 2{,}000장.} 생존률의 95\,\% 신뢰구간이 넓다(10회 중 6회 생존이면 대략 0.3--0.85). $p_{50}$의 추정값도 보간에 의존한다. 또한 \code{cifar\_deep}·\code{resnet18\_t10}의 정확도는 시험 2{,}000장으로 잰 것이라 시행 하나의 정확도에 약 $\pm1$\,\%p(정확도 40--70\,\%에서 표준오차 $\sqrt{a(1-a)/2000}\approx1.0$--$1.1$\,\%p)의 표본 오차가 있다. 조건 간 비교에는 같은 2{,}000장을 쓰므로 영향이 작지만, 무손상 정확도의 90\,\%라는 생존 기준 근처의 시행은 표본 오차만으로 생존/비생존이 갈릴 수 있다.
   \item \textbf{클리핑 상수 $C=3$}은 조정하지 않았다. 학습된 가중치의 분포에 맞춰 $C$를 정하면 결과가 달라질 수 있다.
   \item \textbf{수학 모델의 범위.} 모델 A는 ``치명 명중이 하나라도 있으면 실패''라는 단순화이며, 치명 명중 없이 가수부 손상이 쌓여 실패하는 경우(큰 $k$)는 모델 B에 맡겼다. $\alpha$는 데이터로 맞춘 값이다. E5의 이득은 \code{mnist\_linear} 한 모델에서 잰 것이다.
 \end{itemize}
