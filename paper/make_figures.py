@@ -175,28 +175,46 @@ def fig_trials(df: pd.DataFrame, agg: pd.DataFrame):
     plt.close(fig)
 
 
-def fig_bimodal(df: pd.DataFrame, dfm: pd.DataFrame):
-    """이봉 분포: 전이 구간(중간 선량)의 시행별 정확도 히스토그램.
-    (a) mnist_linear, p = 0.03~0.5% (5단계 × 10회 = 50회), 방어 없음 vs 클리핑
-    (b) 네 모델 합산, 명중 10~400개 구간, 무손상 대비 정확도, 방어 없음"""
-    band = (df.p >= 3e-4) & (df.p <= 5e-3)
-    none = df[band & (df.defense == "none")].acc.values
-    clip = df[band & (df.defense == "clip")].acc.values
-    clean = float(df.clean_acc.iloc[0])
+BIMODAL_DIR = os.path.join(RESULTS, "bimodal100")
+
+
+def load_bimodal100() -> pd.DataFrame | None:
+    """그림 4 전용: p 단계마다 100회씩 돌린 별도 실행(src/results/bimodal100). 없으면 None."""
+    files = sorted(glob.glob(os.path.join(BIMODAL_DIR, "single_*_infer_stress_*.csv")))
+    if not files:
+        return None
+    df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
+    df = df[(df.single_hit == 0) & (df.allowed_bits.isna()) & (df.model.isin(MODEL_ORDER)) & (df.defense.isin(["none", "clip"]))].copy()
+    return df
+
+
+def _draw_bimodal_a(ax, df: pd.DataFrame) -> int:
+    """(a) mnist_linear, p = 0.03~0.5 %, 방어 없음(채움, 왼쪽 축) vs 클리핑(선, 오른쪽 축). 방어 없음 시행 수를 돌려준다."""
+    d = df[df.model == "mnist_linear"] if "model" in df.columns else df
+    band = (d.p >= 3e-4) & (d.p <= 5e-3)
+    none = d[band & (d.defense == "none")].acc.values
+    clip = d[band & (d.defense == "clip")].acc.values
+    clean = float(d.clean_acc.iloc[0])
     bins = np.arange(0, 101, 4)
-    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.3))
-    ax = axes[0]
-    ax.hist(none, bins=bins, color=COLORS["none"], alpha=0.85, label=f"방어 없음 (n={len(none)})")
-    ax.hist(clip, bins=bins, histtype="step", lw=2, color=COLORS["clip"], label=f"클리핑 (n={len(clip)})")
+    ax2 = ax.twinx()
+    h1 = ax.hist(none, bins=bins, color=COLORS["none"], alpha=0.85, label=f"방어 없음 (n={len(none)})")
+    h2 = ax2.hist(clip, bins=bins, histtype="step", lw=2, color=COLORS["clip"], label=f"클리핑 (n={len(clip)})")
     ax.axvline(0.9 * clean, ls=":", lw=1, color="#555")
     ax.axvline(10, ls="--", lw=1, color="#999")
+    ax.set_ylim(0, max(h1[0]) * 1.15 if len(none) else 1)
+    ax2.set_ylim(0, max(h2[0]) * 1.15 if len(clip) else 1)
     ax.text(0.9 * clean - 1, ax.get_ylim()[1] * 0.95, "생존 기준", ha="right", va="top", fontsize=7, color="#555")
     ax.set_xlabel("시행의 정확도 (%)")
-    ax.set_ylabel("시행 수")
+    ax.set_ylabel("시행 수 (방어 없음)")
+    ax2.set_ylabel("시행 수 (클리핑)")
+    ax2.spines["top"].set_visible(False)
     ax.set_title("(a) mnist_linear, $p$ = 0.03–0.5 %", fontsize=10)
-    ax.legend(fontsize=7, loc="upper left")
-    # (b) 네 모델 합산 (무손상 대비 %)
-    ax = axes[1]
+    ax.legend(handles=[h1[2][0], h2[2][0]], fontsize=7, loc="upper left")
+    return len(none)
+
+
+def _draw_bimodal_b(ax, dfm: pd.DataFrame) -> int:
+    """(b) 네 모델 합산 (무손상 대비 %), 방어 없음. 시행 수를 돌려준다."""
     m = dfm[(dfm.defense == "none")].copy()
     m["rel"] = 100 * m.acc / m.clean_acc
     m = m[(m.k >= 10) & (m.k <= 400)]
@@ -211,11 +229,33 @@ def fig_bimodal(df: pd.DataFrame, dfm: pd.DataFrame):
     ax.set_xlabel("무손상 대비 정확도 (%)")
     ax.set_title("(b) 네 모델, 명중 10–400개, 방어 없음", fontsize=10)
     ax.legend(fontsize=7, loc="upper left")
+    return len(m)
+
+
+def fig_bimodal(df: pd.DataFrame, dfm: pd.DataFrame):
+    """이봉 분포: 전이 구간(중간 선량)의 시행별 정확도 히스토그램.
+    src/results/bimodal100 (p 단계마다 100회) 가 있으면 그것을 쓰고, 없으면 E1의 10회 데이터를 쓴다.
+    (a) mnist_linear, p = 0.03~0.5 %, 방어 없음 vs 클리핑
+    (b) 네 모델 합산, 명중 10~400개 구간, 무손상 대비 정확도, 방어 없음
+    합본 fig_bimodal 과 패널별 fig_bimodal_a / fig_bimodal_b 를 모두 저장한다."""
+    big = load_bimodal100()
+    if big is not None:
+        df, dfm = big, big
+    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.3))
+    n_a = _draw_bimodal_a(axes[0], df)
+    n_b = _draw_bimodal_b(axes[1], dfm)
     fig.tight_layout()
     for ext in ("pdf", "png"):
         fig.savefig(os.path.join(FIG_DIR, f"fig_bimodal.{ext}"), dpi=200)
     plt.close(fig)
-    return len(none), len(m)
+    for name, draw, data in (("a", _draw_bimodal_a, df), ("b", _draw_bimodal_b, dfm)):
+        fig, ax = plt.subplots(figsize=(3.8, 3.3))
+        draw(ax, data)
+        fig.tight_layout()
+        for ext in ("pdf", "png"):
+            fig.savefig(os.path.join(FIG_DIR, f"fig_bimodal_{name}.{ext}"), dpi=200)
+        plt.close(fig)
+    return n_a, n_b
 
 
 def fmt_p(p: float) -> str:

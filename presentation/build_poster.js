@@ -145,7 +145,7 @@ T("결론: 위성 속 AI에 방어는 선택이 아니라 필수", { x: LX + 0.4
 T([
   { text: "① 정확도는 매끄럽게 줄지 않는다. ", options: { bold: true } }, { text: "bit 30 명중 하나로 '멀쩡'과 '붕괴'가 갈린다.", options: { breakLine: true } },
   { text: "② 버티는 시간은 모델 크기에 반비례. ", options: { bold: true } }, { text: "ResNet-18 급은 방어 없이 하루를 못 넘긴다.", options: { breakLine: true } },
-  { text: "③ 클리핑만 켜도 약 100배. ", options: { bold: true } }, { text: "비용 0 인 클리핑을 기본으로, 치명적인 bit 30 만 패리티·TMR 로 선택 보호하는 것이 가장 효율적." },
+  { text: "③ 클리핑만 켜도 10~100배. ", options: { bold: true } }, { text: "MNIST 두 모델 약 100배, CIFAR·ResNet 10배대. 비용 0 인 클리핑을 기본으로 하고, 치명적인 bit 30 만 패리티·TMR 로 골라 보호하는 방법을 다음 연구로 제안한다." },
 ], { x: LX + 0.4, y: y + 1.0, w: LW - 0.8, h: 2.6, fontSize: 18, color: C.background1, valign: "top", paraSpaceAfter: 8 });
 
 // ================= RIGHT 1: 결과 ① =================
@@ -163,11 +163,11 @@ s.addImage({ path: FIG + "fig_e1_dose_response.png", x: RX, y: y + 1.0, w: RW, h
 // ================= RIGHT 2: 결과 ② ③ =================
 y = 16.0;
 section(RX, y, RW, 6, "결과 ②③ 두 무리로 갈라진다 — 범인은 bit 30", C.accent2);
-s.addImage({ path: path.join(__dirname, "fig_bimodal_a.png"), x: RX, y: y + 1.0, w: 5.0, h: 5.0 * 660 / 767, objectName: "그림 2" });
+s.addImage({ path: FIG + "fig_bimodal_a.png", x: RX, y: y + 1.0, w: 5.0, h: 5.0 * 660 / 767, objectName: "그림 2" });
 bullets([
-  "p = 0.03~0.5 %, 50회 시행의 정확도 분포. 중간값이 거의 없고 100 % 근처와 10~50 % 에 몰린다 (왼쪽).",
+  "p = 0.03~0.5 %, 500회 시행(5단계 × 100회)의 정확도 분포. 중간값이 거의 없고 100 % 근처와 10~50 % 에 몰린다 (왼쪽).",
   "명중 k번 중 bit 30 을 한 번도 안 맞을 확률 = (31/32)^k : k=31 → 37 %, k=104 → 4 %.",
-  "한 비트만 정확히 뒤집는 실험(아래): 32비트 중 bit 30 만 치명적(생존률 0.5~0.8), 나머지 31개는 1.0.",
+  "한 비트만 정확히 뒤집는 실험(아래): 32비트 중 bit 30 만 치명적(생존률 0.53~0.83), 나머지 31개는 1.0.",
 ], { x: RX + 5.3, y: y + 1.0, w: RW - 5.3, h: 4.4, fontSize: 16 });
 s.addImage({ path: FIG + "fig_e2_bits.png", x: RX, y: y + 5.5, w: RW, h: RW * 620 / 2040, objectName: "그림 3" });
 
@@ -192,7 +192,7 @@ section(RX, y, RW, 7, "결과 ④ 생존은 '명중 수'가 정한다", C.accent
 y = 29.2;
 section(RX, y, RW, 8, "결과 ⑤ 방어 6종: 비트를 지키는 방어가 이긴다", C.accent3);
 {
-  const defs = [["패리티", "≈510배", "+3 % 메모리", C.accent4], ["TMR", "≈170배", "+200 %", C.accent3], ["클리핑", "≈100배", "비용 0", C.accent2], ["앙상블 중앙값", "2배", "+400 %", C.accent5], ["앙상블 평균", "0.2배", "해로움", C.accent1]];
+  const defs = [["패리티", "≈510배", "+3 % 메모리", C.accent4], ["TMR", "≈170배", "+200 %", C.accent3], ["클리핑", "≈100배", "비용 0 (MNIST)", C.accent2], ["앙상블 중앙값", "2배", "+400 %", C.accent5], ["앙상블 평균", "0.2배", "해로움", C.accent1]];
   defs.forEach(([h, g, b, col], i) => {
     const w = RW / 5 - 0.15, x = RX + i * (RW / 5), yy = y + 1.0;
     card(x, yy, w, 1.9);
@@ -200,11 +200,11 @@ section(RX, y, RW, 8, "결과 ⑤ 방어 6종: 비트를 지키는 방어가 이
     T(g, { x: x + 0.15, y: yy + 0.55, w: w - 0.3, h: 0.75, fontSize: 26, bold: true, color: col, align: "center", valign: "middle" });
     T(b, { x: x + 0.15, y: yy + 1.35, w: w - 0.3, h: 0.4, fontSize: 13, color: C.text2, align: "center" });
   });
-  T("이득 = 생존률 50 % 선량이 방어 없음의 몇 배인가. 평균 앙상블은 다섯 모델 중 하나만 ∞ 를 내도 평균이 ∞ 가 되어 혼자일 때보다 5배 자주 죽는다.", { x: RX, y: y + 3.0, w: RW, h: 0.75, fontSize: 14, color: C.text2 });
+  T("이득 = 생존률 50 % 선량이 방어 없음의 몇 배인가. 평균 앙상블은 다섯 모델 중 하나만 ∞ 를 내도 평균이 ∞ 가 되어 혼자일 때의 1/5 선량에서 죽는다(실측 이득 0.2배).", { x: RX, y: y + 3.0, w: RW, h: 0.75, fontSize: 14, color: C.text2 });
 }
 
 // footer
-T("코드·데이터·논문: github.com/SJinLee/AI-in-Space      시뮬레이터는 파이썬으로 직접 구현, 모든 그림·수치는 CSV 에서 자동 생성", { x: 0.9, y: 32.5, w: 10.7, h: 0.4, fontSize: 13, color: C.accent5 });
+T("코드·데이터·논문: github.com/SJinLee/AI-in-Space      시뮬레이터는 파이썬으로 직접 구현, 논문의 그림·수치는 CSV 에서 자동 생성", { x: 0.9, y: 32.5, w: 10.7, h: 0.4, fontSize: 13, color: C.accent5 });
 
 (async () => {
   await pres.writeFile({ fileName: OUT });

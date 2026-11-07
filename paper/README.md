@@ -53,6 +53,14 @@ CSV를 바꾼 뒤 이 스크립트를 다시 돌린다.
   (궤도 모드: `--mode train --rad leo_saa --train-hours 24 168 720 2160 --defenses none clip`; mnist_cnn 은 `--p-list 0 1e-3 1e-2 --defenses none clip --trials 5`, 셀당 약 5분)
   **2026-11-06 논문 본문에서 제외.** 초록·설계·4.9절·결론 등에서 뺀 원문은 `e4_training_injection.tex`에 자리 표시와 함께 보관했다
   (다음 논문용). `make_figures.py`는 지금도 `fig_e4_train`, `table_e4*.tex`, `\Efour...` 매크로를 만들지만 `main.tex`는 쓰지 않는다.
+- 이봉 분포 그림 4 전용 데이터 (p 단계마다 100회, `src/results/bimodal100/`, 2026-11-07). E1 표·수치에는 쓰지 않는다.
+  ```
+  python src/run_e1_models.py --models mnist_linear --p-list 1e-4 3e-4 1e-3 2e-3 3e-3 5e-3 --defenses none clip --trials 100 --out-dir src/results/bimodal100
+  python src/run_e1_models.py --models mnist_cnn     --p-list 1e-4 3e-4 1e-3           --defenses none --trials 100 --out-dir src/results/bimodal100
+  python src/run_e1_models.py --models cifar_deep    --p-list 3e-5 1e-4 3e-4 1e-3      --defenses none --trials 100 --out-dir src/results/bimodal100
+  python src/run_e1_models.py --models resnet18_t10  --p-list 1e-6 3e-6 1e-5 3e-5      --defenses none --trials 100 --out-dir src/results/bimodal100
+  ```
+  `make_figures.py`는 이 폴더가 있으면 그림 4를 여기서 그리고(없으면 E1 10회 데이터), 합본 `fig_bimodal`과 패널별 `fig_bimodal_a`/`_b`를 저장한다.
 - 수학 모델(모델 A 지수, 모델 B 로그-로지스틱)은 `paper/model_fit.py` 에 있고 `make_figures.py` 가 stress 데이터로 맞춘 뒤 E3 로 검증한다.
 
 ## 체크포인트

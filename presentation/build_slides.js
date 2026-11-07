@@ -226,10 +226,10 @@ pres.addSection({ title: "결과" });
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "결과" });
   s.addText("결과 ② 같은 선량에서도 '멀쩡'과 '붕괴' 두 무리로 갈라진다", { placeholder: "title" });
-  s.addImage({ path: path.join(__dirname, "fig_bimodal_a.png"), x: 0.6, y: 1.45, w: 6.6, h: 5.2, objectName: "그림: 정확도 분포 (이봉)" });
+  s.addImage({ path: FIG + "fig_bimodal_a.png", x: 0.8, y: 1.45, w: 6.0, h: 6.0 * 660 / 767, objectName: "그림: 정확도 분포 (이봉)" });
   textbox(s, "왜 두 무리일까?", { x: 7.6, y: 1.5, w: 5.1, h: 0.5, fontSize: 20, bold: true });
   bullets(s, [
-    "p = 0.03~0.5 %, 50회 시행의 정확도 분포. 중간값은 거의 없고 100 % 근처와 10~50 %에 몰려 있다.",
+    "p = 0.03~0.5 %, 500회 시행(5단계 × 100회)의 정확도 분포. 중간값은 거의 없고 100 % 근처와 10~50 %에 몰려 있다.",
     "운명을 가르는 것은 '명중 수'가 아니라 bit 30(지수 맨 앞) 명중이 한 번이라도 있었는가.",
     "명중 k번 중 bit 30 을 한 번도 안 맞을 확률 = (31/32)^k",
   ], { x: 7.6, y: 2.1, w: 5.1, h: 2.6, fontSize: 14, color: C.text1 });
@@ -245,7 +245,7 @@ pres.addSection({ title: "결과" });
   s.addText("결과 ③ 32비트 가운데 치명적인 자리는 단 하나, bit 30", { placeholder: "title" });
   s.addImage({ path: FIG + "fig_e2_bits.png", x: 0.6, y: 1.4, w: 12.1, h: 3.68, objectName: "그림: 비트별 단일 명중 생존률" });
   const facts = [
-    ["bit 30 한 번", "생존률 0.74 (mnist_linear)\n네 모델 모두 0.5~0.8", C.accent1],
+    ["bit 30 한 번", "생존률 0.74 (mnist_linear)\n네 모델 0.53~0.83", C.accent1],
     ["나머지 31개 비트", "생존률 1.0\n부호·가수·낮은 지수 비트는 무해", C.accent5],
     ["모형의 예측", "1 − 32q = 0.72\n실측 0.74 와 일치", C.accent4],
   ];
@@ -274,7 +274,7 @@ pres.addSection({ title: "결과" });
   ];
   s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [3.0, 1.6, 1.6, 2.2, 1.85, 1.85], rowH: 0.52, border: { type: "solid", color: THEME.colors.lt2, pt: 1 }, fill: { color: THEME.colors.lt1 }, objectName: "표: 모델 4종 비교" });
   stat(s, 0.6, 4.75, 3.85, "×110", "가중치 수 차이\n(10만 → 1,100만 개)", C.accent5);
-  stat(s, 4.72, 4.75, 3.85, "60 ~ 110", "생존 50 %가 되는 명중 수 — 거의 일정", C.accent4);
+  stat(s, 4.72, 4.75, 3.85, "56 ~ 112", "생존 50 %가 되는 명중 수 — 거의 일정", C.accent4);
   stat(s, 8.85, 4.75, 3.85, "17일 → 7.5시간", "버티는 시간은 모델 크기에 반비례", C.accent1, 30);
   textbox(s, [
     { text: "하루 명중 수 = r × 32 × 가중치 수 (r = 10" },
@@ -290,9 +290,9 @@ pres.addSection({ title: "결과" });
   s.addText("결과 ⑤ 방어 6종 비교: 비트를 지키는 방어가 이긴다", { placeholder: "title" });
   s.addImage({ path: FIG + "fig_e5_defenses.png", x: 0.6, y: 1.45, w: 7.9, h: 3.25, objectName: "그림: 방어 6종 비교" });
   const defs = [
-    ["패리티", "약 510배", "비트 오류 검출 → 가중치 0으로. 20 % 지워져도 무손상. 메모리 +3 %", C.accent4],
+    ["패리티", "약 510배", "비트 오류 검출 → 가중치 0으로. 20 % 지워져도 생존(정확도 92 %). 메모리 +3 %", C.accent4],
     ["TMR (3중 복제)", "약 170배", "세 복사본의 중앙값. p ≈ 9 % 부근에서 한계. 메모리 +200 %", C.accent3],
-    ["클리핑", "약 100배", "NaN·∞ 제거 + [−3,3] 절단. 비용 거의 0", C.accent2],
+    ["클리핑", "약 100배", "NaN·∞ 제거 + [−3,3] 절단. 비용 거의 0 (MNIST 기준; CIFAR·ResNet은 10~14배)", C.accent2],
     ["앙상블 중앙값 / 평균", "2배 / 0.2배", "모델 5개 투표. 평균은 ∞ 하나에 전체가 끌려감. 메모리 +400 %", C.accent1],
   ];
   defs.forEach(([h, g, b, col], i) => {
@@ -306,7 +306,7 @@ pres.addSection({ title: "결과" });
   card(s, 0.6, 5.2, 7.9, 1.5, { fill: { color: "FFF4E8" }, line: { color: "FFF4E8" } });
   textbox(s, [
     { text: "왜 평균 앙상블은 더 나쁠까? ", options: { bold: true, color: C.accent1 } },
-    { text: "다섯 모델 중 하나라도 ∞ 를 내면 평균도 ∞ 가 된다. 다섯 개가 모두 맞아야 하니 혼자일 때보다 5배 자주 죽는다. 중앙값은 3개가 동시에 망가져야 틀리므로 2배 이득을 본다." },
+    { text: "다섯 모델 중 하나라도 ∞ 를 내면 평균도 ∞ 가 된다. 다섯 개가 모두 멀쩡해야 하니 혼자일 때의 1/5 선량에서 죽는다(실측 이득 0.2배). 중앙값은 3개가 동시에 망가져야 틀리므로 2배 이득을 본다." },
   ], { x: 0.85, y: 5.3, w: 7.4, h: 1.3, fontSize: 13, valign: "middle" });
   s.addNotes("발표자 2. 방어 비교. 끝나면 발표자 1에게 넘긴다.");
 }
@@ -338,7 +338,7 @@ pres.addSection({ title: "모형과 결론" });
   });
   stat(s, 0.6, 5.25, 3.85, "0.0086", "mnist_linear 의 q\n≈ 120번 중 1번", C.accent1);
   stat(s, 4.72, 5.25, 3.85, "오차 0.06", "맞추지 않은 궤도 모드(SAA) 데이터 38점의\n생존률을 이 공식이 예측한 평균 오차", C.accent4);
-  stat(s, 8.85, 5.25, 3.85, [{ text: "k" }, { text: "50", options: { subscript: true } }, { text: " ≈ 80" }], "ln2 / q — 네 모델 실측 60~110 과 같은 수준", C.accent2);
+  stat(s, 8.85, 5.25, 3.85, [{ text: "k" }, { text: "50", options: { subscript: true } }, { text: " ≈ 80" }], "ln2 / q — 네 모델 실측 56~112 와 같은 수준", C.accent2);
   s.addNotes("발표자 1. 수학 모형.");
 }
 // stat 카드 높이 1.55 → y 5.85 + 1.55 = 7.4 > footer. 위 슬라이드에서는 카드가 footer 와 겹치므로 아래에서 보정한다.
@@ -350,7 +350,7 @@ pres.addSection({ title: "모형과 결론" });
   const pts = [
     ["1", "정확도는 매끄럽게 줄지 않는다", "bit 30 명중 하나로 '멀쩡'과 '붕괴'가 갈린다."],
     ["2", "버티는 시간은 모델 크기에 반비례", "ResNet-18 급은 방어 없이 하루를 못 넘긴다."],
-    ["3", "클리핑만 켜도 100배, 지수 비트 보호가 최선", "비용이 거의 없는 클리핑을 기본으로, bit 30 을 패리티·TMR 로 선택 보호."],
+    ["3", "클리핑만 켜도 10~100배, 다음은 지수 비트 보호", "클리핑을 기본으로(MNIST 100배, CIFAR·ResNet 10배대). bit 30 만 골라 보호하는 방법은 다음 연구로 제안."],
   ];
   pts.forEach(([num, h, b], i) => {
     const y = 4.0 + i * 0.95;

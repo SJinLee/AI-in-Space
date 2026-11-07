@@ -1,0 +1,32 @@
+[model] mnist_linear n_weight_elements=101632  N_bits=3252224  n_bias=138  all_params=101770
+mnist_linear  infer p=0.0001   none            n=100  clean= 96.66  median= 96.66  survival=0.92  crash=0.00  k=   10.5  [  2.2s /    2.2s]
+mnist_linear  infer p=0.0001   clip            n=100  clean= 96.66  median= 96.66  survival=1.00  crash=0.00  k=   10.3  [  2.1s /    4.2s]
+mnist_linear  infer p=0.0003   none            n=100  clean= 96.66  median= 96.63  survival=0.76  crash=0.01  k=   31.4  [  2.3s /    6.5s]
+mnist_linear  infer p=0.0003   clip            n=100  clean= 96.66  median= 96.65  survival=1.00  crash=0.00  k=   29.8  [  2.2s /    8.7s]
+mnist_linear  infer p=0.001    none            n=100  clean= 96.66  median= 78.22  survival=0.47  crash=0.00  k=  103.4  [  2.6s /   11.3s]
+mnist_linear  infer p=0.001    clip            n=100  clean= 96.66  median= 96.61  survival=1.00  crash=0.00  k=   99.8  [  2.6s /   13.8s]
+mnist_linear  infer p=0.002    none            n=100  clean= 96.66  median= 46.47  survival=0.27  crash=0.01  k=  206.3  [  2.6s /   16.4s]
+mnist_linear  infer p=0.002    clip            n=100  clean= 96.66  median= 96.49  survival=1.00  crash=0.00  k=  200.2  [  2.5s /   18.9s]
+mnist_linear  infer p=0.003    none            n=100  clean= 96.66  median= 37.17  survival=0.07  crash=0.02  k=  309.3  [  2.6s /   21.4s]
+mnist_linear  infer p=0.003    clip            n=100  clean= 96.66  median= 96.41  survival=1.00  crash=0.00  k=  301.5  [  2.6s /   24.0s]
+mnist_linear  infer p=0.005    none            n=100  clean= 96.66  median= 22.80  survival=0.02  crash=0.04  k=  512.8  [  3.0s /   27.0s]
+mnist_linear  infer p=0.005    clip            n=100  clean= 96.66  median= 96.13  survival=1.00  crash=0.00  k=  504.9  [  2.9s /   29.9s]
+done in 29.9s
+[model] mnist_cnn n_weight_elements=220064  N_bits=7042048  n_bias=170  all_params=220234
+mnist_cnn     infer p=0.0001   none            n=100  clean= 98.72  median= 98.72  survival=0.89  crash=0.00  k=   21.5  [154.9s /  154.9s]
+mnist_cnn     infer p=0.0003   none            n=100  clean= 98.72  median= 89.31  survival=0.50  crash=0.00  k=   66.7  [155.8s /  310.7s]
+mnist_cnn     infer p=0.001    none            n=100  clean= 98.72  median= 33.27  survival=0.12  crash=0.01  k=  217.7  [143.8s /  454.4s]
+done in 454.4s
+[model] cifar_deep n_weight_elements=307040  N_bits=9825280  n_bias=458  all_params=307498
+cifar_deep    infer p=3e-05    none            n=100  clean= 54.65  median= 54.65  survival=0.87  crash=0.00  k=    8.9  [102.9s /  102.9s]
+cifar_deep    infer p=0.0001   none            n=100  clean= 54.65  median= 54.55  survival=0.59  crash=0.04  k=   29.3  [ 99.0s /  201.9s]
+cifar_deep    infer p=0.0003   none            n=100  clean= 54.65  median= 14.57  survival=0.32  crash=0.13  k=   90.5  [ 90.7s /  292.6s]
+cifar_deep    infer p=0.001    none            n=100  clean= 54.65  median= 10.00  survival=0.03  crash=0.68  k=  305.4  [ 48.3s /  340.8s]
+done in 340.8s
+[model] resnet18_t10 n_weight_elements=11172032  N_bits=357505024  n_bias=9610  all_params=11181642
+resnet18_t10  infer p=1e-06    none            n=100  clean= 39.10  median= 39.10  survival=0.97  crash=0.00  k=   10.7  [179.1s /  179.1s]
+resnet18_t10  infer p=3e-06    none            n=100  clean= 39.10  median= 39.10  survival=0.81  crash=0.01  k=   33.8  [175.9s /  355.0s]
+resnet18_t10  infer p=1e-05    none            n=100  clean= 39.10  median= 38.90  survival=0.60  crash=0.06  k=  111.9  [168.7s /  523.7s]
+resnet18_t10  infer p=3e-05    none            n=100  clean= 39.10  median= 12.62  survival=0.08  crash=0.33  k=  336.2  [140.5s /  664.1s]
+done in 664.1s
+exit 0

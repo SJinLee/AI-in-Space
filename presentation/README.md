@@ -6,7 +6,7 @@
 | `발표대본.md` | 슬라이드별 대본 (이태린 1~4·10~11, 최재원 5~9), 시간 배분, 예상 질문 6개 |
 | `poster.pptx` / `poster.pdf` | A1 세로(594×841 mm) 포스터. 인쇄는 `poster.pdf` 사용 |
 | `build_slides.js`, `build_poster.js` | pptxgenjs 생성 스크립트. 그림은 `../paper/figures/*.png`를 읽음 |
-| `fig_bimodal_a.png` | `fig_bimodal.png`의 (a) 패널만 잘라 낸 것 |
+| (그림) | 이봉 분포는 `../paper/figures/fig_bimodal_a.png`(p 단계마다 100회, `src/results/bimodal100`) 사용 |
 
 다시 만들기 (pptxgenjs 가 설치된 폴더에서):
 
