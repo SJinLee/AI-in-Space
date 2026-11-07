@@ -192,7 +192,7 @@ section(RX, y, RW, 7, "결과 ④ 생존은 '명중 수'가 정한다", C.accent
 y = 29.2;
 section(RX, y, RW, 8, "결과 ⑤ 방어 6종: 비트를 지키는 방어가 이긴다", C.accent3);
 {
-  const defs = [["패리티", "≈510배", "+3 % 메모리", C.accent4], ["TMR", "≈170배", "+200 %", C.accent3], ["클리핑", "≈100배", "비용 0", C.accent2], ["앙상블 중앙값", "2배", "+400 %", C.accent5], ["앙상블 평균", "0.5배", "해로움", C.accent1]];
+  const defs = [["패리티", "≈510배", "+3 % 메모리", C.accent4], ["TMR", "≈170배", "+200 %", C.accent3], ["클리핑", "≈100배", "비용 0", C.accent2], ["앙상블 중앙값", "2배", "+400 %", C.accent5], ["앙상블 평균", "0.2배", "해로움", C.accent1]];
   defs.forEach(([h, g, b, col], i) => {
     const w = RW / 5 - 0.15, x = RX + i * (RW / 5), yy = y + 1.0;
     card(x, yy, w, 1.9);

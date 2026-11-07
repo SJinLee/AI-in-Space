@@ -1,0 +1,11 @@
+model,mode,rad,defense,trial,seed,acc,crashed,k,n_bits,n_exponent_hits,n_sign_hits,T_days,r,p,train_hours,epochs,allowed_bits,single_hit,n_train,n_test,seconds,clean_acc,last_finite_acc,ensemble_skipped,note
+mnist_linear,infer,stress,ensemble_median,0,202616343000,96.66,0,4.0,3252224,1,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.09286729991436005,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,1,202616343001,96.66,0,1.8,3252224,1,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.07979190000332892,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,2,202616343002,96.66,0,1.2,3252224,0,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.08630360011011362,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,3,202616343003,96.66,0,3.4,3252224,1,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.14961049985140562,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,4,202616343004,96.66,0,3.6,3252224,1,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.09535160008817911,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,5,202616343005,96.66,0,2.0,3252224,0,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.09843280003406107,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,6,202616343006,96.66,0,2.0,3252224,0,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.09567760000936687,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,7,202616343007,96.66,0,1.6,3252224,0,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.08914349996484816,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,8,202616343008,96.66,0,1.8,3252224,0,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.0743640000000596,96.66,96.66,0,
+mnist_linear,infer,stress,ensemble_median,9,202616343009,96.66,0,2.6,3252224,0,0,1.0,1e-06,3e-05,,2,,0,60000,10000,0.08193420013412833,96.66,96.66,0,

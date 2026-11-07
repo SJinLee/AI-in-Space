@@ -45,6 +45,7 @@ CSV를 바꾼 뒤 이 스크립트를 다시 돌린다.
 - E3 궤도 모드: `python src/run_e1_models.py --rad leo_saa --models mnist_linear mnist_cnn --T-list 1 3 7 14 30 60 90 --trials 10`
   (resnet18 은 `--T-list 0.03 0.1 0.3 1 3`)
 - E5 방어 6종: `python src/run_e1_models.py --models mnist_linear --p-list 3e-4 1e-3 3e-3 1e-2 3e-2 --defenses none clip tmr ensemble ensemble_median parity --trials 10`
+  (2026-11-07 저선량 추가: `--p-list 1e-5 3e-5 1e-4 --defenses parity tmr ensemble ensemble_median`; 평균 앙상블이 p = 0.003 %부터 무너지는 것을 보기 위해)
 - E2 비트별 치명도: `python src/run_e1_models.py --models mnist_linear --bits 31 30 29 28 27 26 25 24 23 22 16 10 0 --defenses none clip --trials 50`
   (다른 모델은 `--defenses none --trials 30`)
 - E5 고선량(TMR 한계 검증): `python src/run_e1_models.py --models mnist_linear --p-list 0.05 0.1 0.2 0.3 0.5 --defenses tmr parity --trials 10`
