@@ -3,7 +3,6 @@
 ```
 paper/
 ├─ main.tex           본문 (XeLaTeX + kotex, 한글)
-├─ main_easy.tex      쉽게 읽는 판 (중학생용; 같은 그림·같은 numbers.tex 를 쓰고 설명만 다시 씀)
 ├─ refs.bib           참고문헌
 ├─ make_figures.py    src/results/*.csv → figures/, tables/ 자동 생성
 ├─ figures/           fig_e1_*.pdf / .png
@@ -21,7 +20,6 @@ paper/
 ```
 cd paper
 & "$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64\latexmk.exe" -xelatex main.tex
-& "$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64\latexmk.exe" -xelatex main_easy.tex   # 쉽게 읽는 판
 ```
 
 한글 글꼴은 `main.tex` 상단에서 본문 명조 = Noto Serif CJK KR → Noto Serif KR(가변 글꼴, 굵게는 FakeBold) → 나눔명조 → 맑은 고딕,
