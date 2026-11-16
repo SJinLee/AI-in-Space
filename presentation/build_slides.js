@@ -106,7 +106,34 @@ pres.addSection({ title: "도입" });
   s.addNotes("표지. 발표자 1(이태린)이 인사하고 제목을 읽는다.");
 }
 
-// ======================= 2. 배경 =======================
+// ======================= 2. 목차 =======================
+{
+  const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "도입" });
+  s.addText("발표 순서", { placeholder: "title" });
+  const groups = [
+    ["1", "도입", C.accent2, "슬라이드 3 ~ 4", ["방사선이 비트를 뒤집는다", "32비트 중 위험한 자리는?"]],
+    ["2", "방법", C.accent4, "슬라이드 5", ["비트를 진짜로 XOR 하는 시뮬레이터", "MNIST 모델, p 13단계 × 10회"]],
+    ["3", "결과 ①~⑤", C.accent1, "슬라이드 6 ~ 10", ["① 17일 vs 1,754일", "② 멀쩡 / 붕괴 두 무리", "③ 치명적인 자리는 bit 30 하나", "④ 큰 모델이 먼저 죽는다", "⑤ 방어 6종 비교"]],
+    ["4", "공식과 결론", C.accent3, "슬라이드 11 ~ 12", ["생존률 = e^(−qk), q ≈ 1/120", "위성 속 AI에 방어는 필수"]],
+  ];
+  groups.forEach(([num, head, col, where, items], i) => {
+    const x = 0.6 + i * 3.1;
+    card(s, x, 1.6, 2.95, 4.1);
+    numCircle(s, x + 0.25, 1.85, num, col);
+    textbox(s, head, { x: x + 0.9, y: 1.85, w: 2.0, h: 0.5, fontSize: 22, bold: true, color: col, valign: "middle" });
+    textbox(s, where, { x: x + 0.25, y: 2.5, w: 2.5, h: 0.3, fontSize: 11, color: C.text2 });
+    bullets(s, items, { x: x + 0.25, y: 2.9, w: 2.5, h: 2.7, fontSize: 14, color: C.text1 });
+  });
+  textbox(s, [
+    { text: "발표자 1 이태린", options: { bold: true, color: C.accent2 } },
+    { text: " — 도입 · 방법 · 공식과 결론        " },
+    { text: "발표자 2 최재원", options: { bold: true, color: C.accent1 } },
+    { text: " — 결과 ①~⑤" },
+  ], { x: 0.6, y: 6.0, w: 12.1, h: 0.6, fontSize: 15, color: C.text1, fill: { color: "FFF4E8" }, margin: 12, valign: "middle" });
+  s.addNotes("발표자 1. 발표 순서를 네 묶음으로 짧게 소개한다(10초).");
+}
+
+// ======================= 3. 배경 =======================
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "도입" });
   s.addText("위성 속 AI에는 '비트 하나가 뒤집히는' 사고가 매일 일어난다", { placeholder: "title" });
@@ -131,7 +158,7 @@ pres.addSection({ title: "도입" });
   s.addNotes("발표자 1. 배경 설명.");
 }
 
-// ======================= 3. float32 =======================
+// ======================= 4. float32 =======================
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "도입" });
   s.addText("가중치 하나 = 32비트. 어느 자리가 뒤집히느냐가 전부 다르다", { placeholder: "title" });
@@ -166,7 +193,7 @@ pres.addSection({ title: "도입" });
   s.addNotes("발표자 1. float32 구조.");
 }
 
-// ======================= 4. 방법 =======================
+// ======================= 5. 방법 =======================
 pres.addSection({ title: "방법" });
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "방법" });
@@ -205,7 +232,7 @@ pres.addSection({ title: "방법" });
   s.addNotes("발표자 1. 실험 방법. 끝나면 발표자 2에게 넘긴다.");
 }
 
-// ======================= 5. 결과 1: p에 따른 정확도 =======================
+// ======================= 6. 결과 1: p에 따른 정확도 =======================
 pres.addSection({ title: "결과" });
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "결과" });
@@ -222,7 +249,7 @@ pres.addSection({ title: "결과" });
   s.addNotes("발표자 2. 핵심 결과.");
 }
 
-// ======================= 6. 결과 2: 이봉 분포 =======================
+// ======================= 7. 결과 2: 이봉 분포 =======================
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "결과" });
   s.addText("결과 ② 같은 선량에서도 '멀쩡'과 '붕괴' 두 무리로 갈라진다", { placeholder: "title" });
@@ -239,7 +266,7 @@ pres.addSection({ title: "결과" });
   s.addNotes("발표자 2. 이봉 분포와 bit 30.");
 }
 
-// ======================= 7. 결과 3: 비트별 치명도 =======================
+// ======================= 8. 결과 3: 비트별 치명도 =======================
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "결과" });
   s.addText("결과 ③ 32비트 가운데 치명적인 자리는 단 하나, bit 30", { placeholder: "title" });
@@ -259,7 +286,7 @@ pres.addSection({ title: "결과" });
   s.addNotes("발표자 2. 비트 지도.");
 }
 
-// ======================= 8. 결과 4: 모델 크기 =======================
+// ======================= 9. 결과 4: 모델 크기 =======================
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "결과" });
   s.addText("결과 ④ 생존은 '명중 수'가 정한다. 큰 모델이 먼저 죽는다", { placeholder: "title" });
@@ -284,7 +311,7 @@ pres.addSection({ title: "결과" });
   s.addNotes("발표자 2. 모델 크기 축.");
 }
 
-// ======================= 9. 결과 5: 방어 비교 =======================
+// ======================= 10. 결과 5: 방어 비교 =======================
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "결과" });
   s.addText("결과 ⑤ 방어 6종 비교: 비트를 지키는 방어가 이긴다", { placeholder: "title" });
@@ -311,7 +338,7 @@ pres.addSection({ title: "결과" });
   s.addNotes("발표자 2. 방어 비교. 끝나면 발표자 1에게 넘긴다.");
 }
 
-// ======================= 10. 수학 모형 =======================
+// ======================= 11. 수학 모형 =======================
 pres.addSection({ title: "모형과 결론" });
 {
   const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "모형과 결론" });
@@ -343,7 +370,7 @@ pres.addSection({ title: "모형과 결론" });
 }
 // stat 카드 높이 1.55 → y 5.85 + 1.55 = 7.4 > footer. 위 슬라이드에서는 카드가 footer 와 겹치므로 아래에서 보정한다.
 
-// ======================= 11. 결론 =======================
+// ======================= 12. 결론 =======================
 {
   const s = pres.addSlide({ masterName: "DARK", sectionTitle: "모형과 결론" });
   s.addText("결론: 위성 속 AI에 방어는 선택이 아니라 필수", { placeholder: "title", fontSize: 32 });
