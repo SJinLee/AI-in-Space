@@ -62,6 +62,7 @@ def load() -> pd.DataFrame:
     files = sorted(glob.glob(os.path.join(RESULTS, "single_mnist_linear_infer_stress_*.csv")))
     df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
     df = df[(df.single_hit == 0) & (df.allowed_bits.isna()) & (df.defense.isin(["none", "clip"]))].copy()
+    df = df[df.p <= 0.1 + 1e-12].copy()  # E1 은 13단계. p > 10 % 는 그림 9(E5) 전용
     df["survived"] = (df.acc >= 0.9 * df.clean_acc).astype(float)
     return df
 
@@ -344,6 +345,7 @@ def load_models() -> pd.DataFrame:
     files = sorted(glob.glob(os.path.join(RESULTS, "single_*_infer_stress_*.csv")))
     df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
     df = df[(df.single_hit == 0) & (df.allowed_bits.isna()) & (df.model.isin(MODEL_ORDER)) & (df.defense.isin(["none", "clip"]))].copy()
+    df = df[~((df.model == "mnist_linear") & (df.p > 0.1 + 1e-12))].copy()  # p > 10 % 는 그림 9(E5) 전용
     df["survived"] = (df.acc >= 0.9 * df.clean_acc).astype(float)
     return df
 
@@ -476,8 +478,8 @@ import model_fit as MF  # noqa: E402
 
 POS_FRAC = {"mnist_linear": 0.492, "mnist_cnn": 0.470, "cifar_deep": 0.421, "resnet18_t10": 0.459}  # 클린 체크포인트에서 잰 양수 가중치 비율
 DEF_ORDER = ["none", "clip", "parity", "tmr", "ensemble_median", "ensemble"]
-DEF_LABEL = {"none": "방어 없음", "clip": "클리핑", "parity": "패리티", "tmr": "TMR(가중치 중앙값)",
-             "ensemble_median": "앙상블(로짓 중앙값)", "ensemble": "앙상블(로짓 평균)"}
+DEF_LABEL = {"none": "방어 없음", "clip": "클리핑", "parity": "패리티", "tmr": "TMR",
+             "ensemble_median": "앙상블(중앙값)", "ensemble": "앙상블(평균)"}
 # dataviz 팔레트 6슬롯 (blue, orange, aqua, yellow, magenta, green)
 DEF_COLORS = {"none": "#C94A24", "clip": "#245EA6", "parity": "#1baf7a", "tmr": "#eda100",
               "ensemble_median": "#e87ba4", "ensemble": "#008300"}
@@ -571,14 +573,22 @@ def fig_e3(leo: pd.DataFrame, fit: pd.DataFrame):
     plt.close(fig)
 
 
-def fig_e5(e5: pd.DataFrame):
+def fig_e5(e5: pd.DataFrame, fit_e5: pd.DataFrame):
+    """여섯 방어 모두 같은 p 16단계. (b)의 큰 테두리 점은 모델 B 로 맞춘 생존률 50 % 지점 p50 = k50 / N_w."""
     fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.3))
+    n_w = int(e5.n_w.iloc[0])
+    base = float(fit_e5[fit_e5.defense == "none"].k50.iloc[0])
     for d in DEF_ORDER:
         g = e5[e5.defense == d].sort_values("p")
         if g.empty:
             continue
-        axes[0].plot(g.p * 100, g.median_acc, marker=DEF_MARKERS[d], ms=5, lw=2, color=DEF_COLORS[d], label=DEF_LABEL[d])
-        axes[1].plot(g.p * 100, g.survival, marker=DEF_MARKERS[d], ms=5, lw=2, color=DEF_COLORS[d], label=DEF_LABEL[d])
+        k50 = float(fit_e5[fit_e5.defense == d].k50.iloc[0])
+        gain = k50 / base
+        gs = f"{gain:.0f}" if gain >= 10 else f"{gain:.1f}"
+        axes[0].plot(g.p * 100, g.median_acc, marker=DEF_MARKERS[d], ms=4, lw=1.8, color=DEF_COLORS[d])
+        axes[1].plot(g.p * 100, g.survival, marker=DEF_MARKERS[d], ms=4, lw=1.8, color=DEF_COLORS[d],
+                     label=f"{DEF_LABEL[d]}  ×{gs}")
+        axes[1].plot([100 * k50 / n_w], [0.5], marker="o", ms=8, mfc="white", mec=DEF_COLORS[d], mew=2, zorder=5)
     clean = float(e5.clean.iloc[0])
     axes[0].axhline(0.9 * clean, ls=":", lw=1, color="#555")
     axes[1].axhline(0.5, ls=":", lw=1, color="#555")
@@ -589,8 +599,9 @@ def fig_e5(e5: pd.DataFrame):
         ax.set_ylabel(yl)
         ax.set_title(t, fontsize=10)
         ax.set_ylim(*yl2)
-    axes[1].legend(fontsize=7, loc="lower left")
-    fig.tight_layout()
+    h, l = axes[1].get_legend_handles_labels()
+    fig.legend(h, l, fontsize=7, loc="lower center", ncol=6, frameon=False, handlelength=1.4, columnspacing=1.0, handletextpad=0.4)
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
     for ext in ("pdf", "png"):
         fig.savefig(os.path.join(FIG_DIR, f"fig_e5_defenses.{ext}"), dpi=200)
     plt.close(fig)
@@ -677,7 +688,7 @@ def table_e3(leo: pd.DataFrame, fit: pd.DataFrame) -> dict:
 
 def table_e5(e5: pd.DataFrame, fit_e5: pd.DataFrame) -> dict:
     vals = {}
-    ps = [p for p in sorted(e5[e5.defense == "tmr"].p.unique()) if p <= 0.03]  # E5 본 실험의 p 5단계만 열로 (고선량은 별도 표)
+    ps = [1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2]  # 표의 열은 8단계만 (그림 9는 11단계, 고선량은 별도 표)
     lines = [r"\setlength{\tabcolsep}{3pt}", r"\begin{tabular}{l" + "r" * len(ps) + r"|rr}", r"\toprule",
              r"방어 & " + " & ".join(f"$p$={fmt_p(p)}\\%" for p in ps) + r" & $k_{50}$ & 이득 \\",
              r"\midrule"]
@@ -1020,7 +1031,7 @@ if __name__ == "__main__":
     e5 = load_e5()
     fit_e5 = MF.fit_all(e5.assign(model="mnist_linear"), POS_FRAC)
     print(fit_e5.round(3).to_string(index=False))
-    fig_e5(e5[e5.p <= 0.03])
+    fig_e5(e5, fit_e5)
     vals_m.update(table_e5(e5, fit_e5))
     vals_m.update(table_e5_high(e5, fit_e5))
     e2 = load_e2()
